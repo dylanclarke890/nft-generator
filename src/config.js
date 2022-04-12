@@ -22,7 +22,7 @@ const uniqueDnaTorrance = 10000;
 
 const editionSize = 3;
 
-export default {
+module.exports = {
   layersOrder,
   format,
   editionSize,

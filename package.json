@@ -18,10 +18,10 @@
     "preview": "node utils/preview.js",
     "pixelate": "ts-node utils/pixelate.ts",
     "update_info": "node utils/update_info.js",
-    "preview_gif": "node utils/preview_gif.js",
+    "preview_gif": "ts-node utils/preview_gif.ts",
     "generate_metadata": "ts-node utils/generate_metadata.ts"
   },
-  "author": "Daniel Eugene Botha (HashLips)",
+  "author": "Dylan Clarke",
   "license": "MIT",
   "dependencies": {
     "canvas": "^2.8.0",

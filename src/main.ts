@@ -8,8 +8,6 @@ import {
 } from "fs";
 import sha1 from "sha1";
 import { createCanvas, loadImage } from "canvas";
-const buildDir = `../build`;
-const layersDir = `../layers`;
 import {
   format,
   baseUri,
@@ -27,6 +25,11 @@ import {
   solanaMetadata,
   gif,
 } from "./config";
+import HashLipsGiffer from "../modules/HashlipsGiffer";
+
+const basePath = process.cwd();
+const buildDir = `${basePath}/build`;
+const layersDir = `${basePath}/layers`;
 const canvas = createCanvas(format.width, format.height);
 const ctx: any = canvas.getContext("2d");
 ctx.imageSmoothingEnabled = format.smoothing;
@@ -34,7 +37,6 @@ var metadataList: any[] = [];
 var attributesList: any[] = [];
 var dnaList = new Set();
 const DNA_DELIMITER = "-";
-const HashlipsGiffer = require(`${basePath}/modules/HashlipsGiffer.js`);
 
 let hashlipsGiffer: any = null;
 
@@ -376,7 +378,7 @@ const startCreating = async () => {
           debugLogs ? console.log("Clearing canvas") : null;
           ctx.clearRect(0, 0, format.width, format.height);
           if (gif.export) {
-            hashlipsGiffer = new HashlipsGiffer(
+            hashlipsGiffer = new HashLipsGiffer(
               canvas,
               ctx,
               `${buildDir}/gifs/${abstractedIndexes[0]}.gif`,

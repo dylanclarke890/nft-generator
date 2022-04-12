@@ -1,12 +1,12 @@
 import fs from "fs";
+const basePath = process.cwd();
 const layersDir = `${basePath}/layers`;
 
-const { layerConfigurations } = require(`${basePath}/src/config.js`);
-
+import { layerConfigurations } from "../src/config";
 import { getElements } from "../src/main";
 
 // read json data
-let rawdata: any = fs.readFileSync("../build/json/_metadata.json");
+let rawdata: any = fs.readFileSync(`${basePath}/build/json/_metadata.json`);
 let data = JSON.parse(rawdata);
 let editionSize = data.length;
 

@@ -3,7 +3,7 @@ import fs from "fs";
 import { createCanvas, loadImage } from "canvas";
 const buildDir = `${basePath}/build`;
 
-const { preview } = require(`${basePath}/src/config.js`);
+import { preview } from "../src/config";
 
 // read json data
 const rawdata: any = fs.readFileSync(`${basePath}/build/json/_metadata.json`);

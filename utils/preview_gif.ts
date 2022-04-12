@@ -3,11 +3,10 @@ import fs from "fs";
 import { createCanvas, loadImage } from "canvas";
 const buildDir = `${basePath}/build`;
 const imageDir = `${buildDir}/images`;
-const { format, preview_gif } = require(`${basePath}/src/config.js`);
+import { preview_gif, format } from "../src/config";
 const canvas = createCanvas(format.width, format.height);
 const ctx = canvas.getContext("2d");
-
-const HashlipsGiffer = require(`${basePath}/modules/HashlipsGiffer.js`);
+import HashLipsGiffer from "../modules/HashlipsGiffer";
 let hashlipsGiffer: any = null;
 
 const loadImg = async (_img: any) => {
@@ -46,7 +45,7 @@ const saveProjectPreviewGIF = async (_data: any) => {
 
     ctx.clearRect(0, 0, width, height);
 
-    hashlipsGiffer = new HashlipsGiffer(
+    hashlipsGiffer = new HashLipsGiffer(
       canvas,
       ctx,
       `${previewPath}`,
@@ -67,7 +66,7 @@ const saveProjectPreviewGIF = async (_data: any) => {
       }
 
       // Reduce the size of the array of Images to the desired amount
-      if (parseInt(numberOfImages) > 0) {
+      if (numberOfImages > 0) {
         renderObjectArray = renderObjectArray.slice(0, numberOfImages);
       }
 

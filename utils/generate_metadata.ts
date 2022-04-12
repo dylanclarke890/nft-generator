@@ -4,12 +4,7 @@ import { createCanvas, loadImage } from "canvas";
 const basePath = process.cwd();
 const buildDir = `${basePath}/build/json`;
 const inputDir = `${basePath}/build/images`;
-const {
-  format,
-  namePrefix,
-  description,
-  baseUri,
-} = require(`${basePath}/src/config.js`);
+import { format, namePrefix, description, baseUri } from "../src/config";
 import console from "console";
 const canvas = createCanvas(format.width, format.height);
 const ctx = canvas.getContext("2d");
@@ -22,7 +17,7 @@ const buildSetup = () => {
   fs.mkdirSync(buildDir);
 };
 
-const getImages = (_dir : any) => {
+const getImages = (_dir: any) => {
   try {
     return fs
       .readdirSync(_dir)
@@ -43,7 +38,7 @@ const getImages = (_dir : any) => {
   }
 };
 
-const loadImgData = async (_imgObject : any) => {
+const loadImgData = async (_imgObject: any) => {
   try {
     const image = await loadImage(`${_imgObject.path}`);
     return {
@@ -55,7 +50,7 @@ const loadImgData = async (_imgObject : any) => {
   }
 };
 
-const draw = (_imgObject : any) => {
+const draw = (_imgObject: any) => {
   let w = canvas.width;
   let h = canvas.height;
   ctx.drawImage(_imgObject.loadedImage, 0, 0, w, h);
@@ -116,11 +111,11 @@ const addRarity = () => {
   ];
 };
 
-const randomIntFromInterval = (min:number, max:number) => {
+const randomIntFromInterval = (min: number, max: number) => {
   return Math.floor(Math.random() * (max - min + 1) + min);
 };
 
-const isNeighborColor = (color1: any, color2:any, tolerance:any) => {
+const isNeighborColor = (color1: any, color2: any, tolerance: any) => {
   return (
     Math.abs(color1.r - color2.r) <= tolerance &&
     Math.abs(color1.g - color2.g) <= tolerance &&
@@ -152,7 +147,7 @@ const saveMetadata = (_loadedImageObject: any) => {
   metadataList.push(tempMetadata);
 };
 
-const writeMetaData = (_data:any) => {
+const writeMetaData = (_data: any) => {
   fs.writeFileSync(`${buildDir}/_metadata.json`, _data);
 };
 
@@ -162,7 +157,7 @@ const startCreating = async () => {
     console.log("Please generate collection first.");
     return;
   }
-  let loadedImageObjects:any[] = [];
+  let loadedImageObjects: any[] = [];
   images.forEach((imgObject) => {
     loadedImageObjects.push(loadImgData(imgObject));
   });

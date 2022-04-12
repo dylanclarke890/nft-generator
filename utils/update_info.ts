@@ -1,6 +1,6 @@
-import NETWORK from "../constants/network.js";
+import NETWORK from "../constants/network";
 import fs from "fs";
-
+const basePath = process.cwd();
 import {
   baseUri,
   description,

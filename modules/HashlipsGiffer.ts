@@ -1,8 +1,22 @@
-const GifEncoder = require("gif-encoder-2");
-const { writeFile } = require("fs");
+import GifEncoder from "gif-encoder-2";
+import { writeFile } from "fs";
 
 class HashLipsGiffer {
-  constructor(_canvas, _ctx, _fileName, _repeat, _quality, _delay) {
+  canvas: any;
+  ctx: any;
+  fileName: any;
+  repeat: any;
+  quality: any;
+  delay: any;
+  gifEncoder: any;
+  constructor(
+    _canvas: any,
+    _ctx: any,
+    _fileName: any,
+    _repeat: any,
+    _quality: any,
+    _delay: any
+  ) {
     this.canvas = _canvas;
     this.ctx = _ctx;
     this.fileName = _fileName;
@@ -35,4 +49,4 @@ class HashLipsGiffer {
   };
 }
 
-module.exports = HashLipsGiffer;
+export default HashLipsGiffer;

@@ -1,11 +1,11 @@
-const fs = require("fs");
-const path = require("path");
-const { createCanvas, loadImage } = require("canvas");
+import fs from "fs";
+import path from "path";
+import { createCanvas, loadImage } from "canvas";
 const basePath = process.cwd();
 const buildDir = `${basePath}/build/pixel_images`;
 const inputDir = `${basePath}/build/images`;
 const { format, pixelFormat } = require(`${basePath}/src/config.js`);
-const console = require("console");
+import console from "console";
 const canvas = createCanvas(format.width, format.height);
 const ctx = canvas.getContext("2d");
 
@@ -16,7 +16,7 @@ const buildSetup = () => {
   fs.mkdirSync(buildDir);
 };
 
-const getImages = (_dir) => {
+const getImages = (_dir: any) => {
   try {
     return fs
       .readdirSync(_dir)
@@ -37,7 +37,7 @@ const getImages = (_dir) => {
   }
 };
 
-const loadImgData = async (_imgObject) => {
+const loadImgData = async (_imgObject: any) => {
   try {
     const image = await loadImage(`${_imgObject.path}`);
     return {
@@ -49,7 +49,7 @@ const loadImgData = async (_imgObject) => {
   }
 };
 
-const draw = (_imgObject) => {
+const draw = (_imgObject: any) => {
   let size = pixelFormat.ratio;
   let w = canvas.width * size;
   let h = canvas.height * size;
@@ -58,7 +58,7 @@ const draw = (_imgObject) => {
   ctx.drawImage(canvas, 0, 0, w, h, 0, 0, canvas.width, canvas.height);
 };
 
-const saveImage = (_loadedImageObject) => {
+const saveImage = (_loadedImageObject: any) => {
   fs.writeFileSync(
     `${buildDir}/${_loadedImageObject.imgObject.filename}`,
     canvas.toBuffer("image/png")
@@ -71,7 +71,7 @@ const startCreating = async () => {
     console.log("Please generate collection first.");
     return;
   }
-  let loadedImageObjects = [];
+  let loadedImageObjects: any[] = [];
   images.forEach((imgObject) => {
     loadedImageObjects.push(loadImgData(imgObject));
   });

@@ -16,7 +16,7 @@
     "generate": "ts-node index.ts",
     "rarity": "node utils/rarity.js",
     "preview": "node utils/preview.js",
-    "pixelate": "node utils/pixelate.js",
+    "pixelate": "ts-node utils/pixelate.ts",
     "update_info": "node utils/update_info.js",
     "preview_gif": "node utils/preview_gif.js",
     "generate_metadata": "ts-node utils/generate_metadata.ts"

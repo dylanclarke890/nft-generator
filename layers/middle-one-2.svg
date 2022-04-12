@@ -8,8 +8,8 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="500"
-   height="125"
-   viewBox="0 0 132.29166 33.072918"
+   height="500"
+   viewBox="0 0 132.29166 132.29167"
    version="1.1"
    id="svg56"
    inkscape:version="1.0.2-2 (e86c870879, 2021-01-15)"
@@ -24,7 +24,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.4"
-     inkscape:cx="183.75665"
+     inkscape:cx="310.18522"
      inkscape:cy="54.982581"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
@@ -54,94 +54,94 @@
      id="layer1">
     <rect
        style="fill:#000000;stroke:#ffffff;stroke-width:0.167712"
-       id="rect62"
+       id="rect62-3"
        width="132.09027"
        height="30.41468"
-       x="-0.020841701"
-       y="-0.020841701" />
+       x="-0.02085495"
+       y="33.389637" />
     <rect
        style="fill:#666666;stroke:#ffffff;stroke-width:0.101225"
-       id="rect64"
+       id="rect64-6"
        width="132.34576"
        height="2.8889065"
-       x="-0.027042655"
-       y="-0.027042655" />
+       x="-0.027053833"
+       y="33.383438" />
     <rect
        style="fill:#666666;stroke:#ffffff;stroke-width:0.101225"
-       id="rect64-4"
+       id="rect64-4-5"
        width="132.34576"
        height="2.8889065"
-       x="-0.027048383"
-       y="30.494534" />
+       x="-0.027061462"
+       y="63.905014" />
     <rect
        style="fill:#666666;stroke:#666666;stroke-width:0.161901"
-       id="rect53"
+       id="rect53-3"
        width="4.155067"
        height="28.975723"
-       x="9.4507408"
-       y="1.8280008" />
+       x="9.4507275"
+       y="35.23848" />
     <rect
        style="fill:#666666;stroke:#666666;stroke-width:0.161901"
-       id="rect53-2"
+       id="rect53-2-4"
        width="4.155067"
        height="28.975723"
-       x="21.923954"
-       y="2.1430907" />
+       x="21.923943"
+       y="35.55357" />
     <rect
        style="fill:#666666;stroke:#666666;stroke-width:0.161901"
-       id="rect53-2-9"
+       id="rect53-2-9-2"
        width="4.155067"
        height="28.975723"
-       x="36.665028"
-       y="2.1430907" />
+       x="36.665016"
+       y="35.55357" />
     <rect
        style="fill:#666666;stroke:#666666;stroke-width:0.161901"
-       id="rect53-2-8"
+       id="rect53-2-8-9"
        width="4.155067"
        height="28.975723"
-       x="51.595085"
-       y="2.8990431" />
+       x="51.595074"
+       y="36.309525" />
     <rect
        style="fill:#666666;stroke:#666666;stroke-width:0.161901"
-       id="rect53-2-1"
+       id="rect53-2-1-4"
        width="4.155067"
        height="28.975723"
-       x="70.304909"
-       y="2.7100551" />
+       x="70.304901"
+       y="36.120537" />
     <rect
        style="fill:#666666;stroke:#666666;stroke-width:0.161901"
-       id="rect53-2-7"
+       id="rect53-2-7-3"
        width="4.155067"
        height="28.975723"
-       x="92.605499"
-       y="3.0880313" />
+       x="92.605484"
+       y="36.498512" />
     <rect
        style="fill:#666666;stroke:#666666;stroke-width:0.161901"
-       id="rect53-2-0"
+       id="rect53-2-0-6"
        width="4.155067"
        height="28.975723"
-       x="108.66949"
-       y="2.3320789" />
+       x="108.66947"
+       y="35.742558" />
     <rect
        style="fill:#666666;stroke:#666666;stroke-width:0.161901"
-       id="rect53-2-09"
+       id="rect53-2-09-3"
        width="4.155067"
        height="28.975723"
-       x="119.25282"
-       y="2.8990431" />
+       x="119.25281"
+       y="36.309525" />
     <rect
        style="fill:#666666;stroke:#666666;stroke-width:0.161901"
-       id="rect53-2-5"
+       id="rect53-2-5-6"
        width="4.155067"
        height="28.975723"
-       x="80.888237"
-       y="2.3320789" />
+       x="80.888229"
+       y="35.742558" />
     <rect
        style="fill:#666666;stroke:#666666;stroke-width:0.161901"
-       id="rect53-2-83"
+       id="rect53-2-83-0"
        width="4.155067"
        height="28.975723"
-       x="59.910561"
-       y="1.3871384" />
+       x="59.910545"
+       y="34.797619" />
   </g>
 </svg>

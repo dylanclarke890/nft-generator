@@ -8,8 +8,8 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="500"
-   height="125"
-   viewBox="0 0 132.29166 33.072918"
+   height="500"
+   viewBox="0 0 132.29166 132.29167"
    version="1.1"
    id="svg56"
    inkscape:version="1.0.2-2 (e86c870879, 2021-01-15)"
@@ -25,7 +25,7 @@
      inkscape:pageshadow="2"
      inkscape:zoom="1.4"
      inkscape:cx="183.75665"
-     inkscape:cy="54.982581"
+     inkscape:cy="250.93496"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      inkscape:document-rotation="0"
@@ -56,28 +56,28 @@
        style="fill:#ff0000;stroke:#ff00ff;stroke-width:0.15531"
        id="path448"
        cx="16.158484"
-       cy="16.347471"
+       cy="82.49321"
        rx="14.457589"
        ry="13.323661" />
     <ellipse
        style="fill:#ff6600;stroke:#ff6600;stroke-width:0.15531"
        id="path448-6"
        cx="48.947914"
-       cy="15.875"
+       cy="82.020737"
        rx="14.457589"
        ry="13.323661" />
     <ellipse
        style="fill:#ffff00;stroke:#ffff00;stroke-width:0.15531"
        id="path448-1"
        cx="82.020828"
-       cy="16.252975"
+       cy="82.398712"
        rx="14.457589"
        ry="13.323661" />
     <ellipse
        style="fill:#00ff00;stroke:#00ff00;stroke-width:0.15531"
        id="path448-8"
        cx="115.09375"
-       cy="16.063988"
+       cy="82.209724"
        rx="14.457589"
        ry="13.323661" />
   </g>

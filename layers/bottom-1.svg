@@ -9,8 +9,8 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="500"
-   height="125"
-   viewBox="0 0 132.29166 33.072918"
+   height="500"
+   viewBox="0 0 132.29166 132.29167"
    version="1.1"
    id="svg56"
    inkscape:version="1.0.2-2 (e86c870879, 2021-01-15)"
@@ -45,7 +45,8 @@
        y1="17.953869"
        x2="124.92113"
        y2="15.497024"
-       gradientUnits="userSpaceOnUse" />
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(0,98.651786)" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -56,7 +57,7 @@
      inkscape:pageshadow="2"
      inkscape:zoom="1.4"
      inkscape:cx="183.75665"
-     inkscape:cy="54.982581"
+     inkscape:cy="225.22068"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      inkscape:document-rotation="0"
@@ -84,11 +85,11 @@
      inkscape:groupmode="layer"
      id="layer1">
     <rect
-       style="fill:url(#linearGradient1030);stroke:#666666;stroke-width:0.15531;fill-opacity:1"
+       style="fill:url(#linearGradient1030);fill-opacity:1;stroke:#666666;stroke-width:0.15531"
        id="rect1014"
        width="132.29167"
        height="33.828869"
        x="0.13091755"
-       y="0.0039822645" />
+       y="98.655769" />
   </g>
 </svg>

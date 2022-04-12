@@ -1,24 +1,20 @@
-const description =
-  "This is the description of your NFT project, remember to replace this";
+const description = "NFT Generator Tutorial";
 const baseUri = "https://hashlips/nft";
 
 const layersOrder = [
-  { name: "Background" },
-  { name: "Eyeball" },
-  { name: "Eye color" },
-  { name: "Iris" },
-  { name: "Shine" },
-  { name: "Bottom lid" },
-  { name: "Top lid" },
+  { name: "top" },
+  { name: "middle-one" },
+  { name: "middle-two" },
+  { name: "bottom" },
 ];
 
 const format = {
-  width: 512,
-  height: 512,
+  width: 500,
+  height: 500,
 };
 
 const background = {
-  generate: true,
+  generate: false,
   brightness: "80%",
 };
 
@@ -26,7 +22,7 @@ const uniqueDnaTorrance = 10000;
 
 const editionSize = 3;
 
-module.exports = {
+export default {
   layersOrder,
   format,
   editionSize,

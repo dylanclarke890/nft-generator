@@ -433,4 +433,4 @@ const startCreating = async () => {
   writeMetaData(JSON.stringify(metadataList, null, 2));
 };
 
-export default { startCreating, buildSetup, getElements };
+export { startCreating, buildSetup, getElements };

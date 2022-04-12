@@ -1,12 +1,11 @@
-const basePath = process.cwd();
-const { MODE } = require(`${basePath}/constants/blend_mode.js`);
-const { NETWORK } = require(`${basePath}/constants/network.js`);
+import MODE from "../constants/blend_mode";
+import NETWORK from "../constants/network";
 
 const network = NETWORK.eth;
 
 // General metadata for Ethereum
-const namePrefix = "Your Collection";
-const description = "Remember to replace this description";
+const namePrefix = "My First Collection";
+const description = "My first description for my first collection";
 const baseUri = "ipfs://NewUriToReplace";
 
 const solanaMetadata = {
@@ -97,7 +96,7 @@ const preview_gif = {
   imageName: "preview.gif",
 };
 
-module.exports = {
+export {
   format,
   baseUri,
   description,

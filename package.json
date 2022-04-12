@@ -12,8 +12,8 @@
     ]
   },
   "scripts": {
-    "build": "node index.js",
-    "generate": "node index.js",
+    "build": "ts-node index.ts",
+    "generate": "ts-node index.ts",
     "rarity": "node utils/rarity.js",
     "preview": "node utils/preview.js",
     "pixelate": "node utils/pixelate.js",
@@ -27,5 +27,10 @@
     "canvas": "^2.8.0",
     "gif-encoder-2": "^1.0.5",
     "sha1": "^1.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.23",
+    "ts-node": "^10.7.0",
+    "typescript": "^4.6.3"
   }
 }

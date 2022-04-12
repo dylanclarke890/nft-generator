@@ -1,15 +1,15 @@
 const basePath = process.cwd();
-const fs = require("fs");
-const { createCanvas, loadImage } = require("canvas");
+import fs from "fs";
+import { createCanvas, loadImage } from "canvas";
 const buildDir = `${basePath}/build`;
 
 const { preview } = require(`${basePath}/src/config.js`);
 
 // read json data
-const rawdata = fs.readFileSync(`${basePath}/build/json/_metadata.json`);
+const rawdata: any = fs.readFileSync(`${basePath}/build/json/_metadata.json`);
 const metadataList = JSON.parse(rawdata);
 
-const saveProjectPreviewImage = async (_data) => {
+const saveProjectPreviewImage = async (_data: any) => {
   // Extract from preview config
   const { thumbWidth, thumbPerRow, imageRatio, imageName } = preview;
   // Calculate height on the fly

@@ -1,6 +1,6 @@
-const fs = require("fs");
-const path = require("path");
-const { createCanvas, loadImage } = require("canvas");
+import fs from "fs";
+import path from "path";
+import { createCanvas, loadImage } from "canvas";
 const basePath = process.cwd();
 const buildDir = `${basePath}/build/json`;
 const inputDir = `${basePath}/build/images`;
@@ -10,10 +10,10 @@ const {
   description,
   baseUri,
 } = require(`${basePath}/src/config.js`);
-const console = require("console");
+import console from "console";
 const canvas = createCanvas(format.width, format.height);
 const ctx = canvas.getContext("2d");
-const metadataList = [];
+const metadataList: any[] = [];
 
 const buildSetup = () => {
   if (fs.existsSync(buildDir)) {
@@ -22,7 +22,7 @@ const buildSetup = () => {
   fs.mkdirSync(buildDir);
 };
 
-const getImages = (_dir) => {
+const getImages = (_dir : any) => {
   try {
     return fs
       .readdirSync(_dir)
@@ -43,7 +43,7 @@ const getImages = (_dir) => {
   }
 };
 
-const loadImgData = async (_imgObject) => {
+const loadImgData = async (_imgObject : any) => {
   try {
     const image = await loadImage(`${_imgObject.path}`);
     return {
@@ -55,7 +55,7 @@ const loadImgData = async (_imgObject) => {
   }
 };
 
-const draw = (_imgObject) => {
+const draw = (_imgObject : any) => {
   let w = canvas.width;
   let h = canvas.height;
   ctx.drawImage(_imgObject.loadedImage, 0, 0, w, h);
@@ -116,11 +116,11 @@ const addRarity = () => {
   ];
 };
 
-randomIntFromInterval = (min, max) => {
+const randomIntFromInterval = (min:number, max:number) => {
   return Math.floor(Math.random() * (max - min + 1) + min);
 };
 
-isNeighborColor = (color1, color2, tolerance) => {
+const isNeighborColor = (color1: any, color2:any, tolerance:any) => {
   return (
     Math.abs(color1.r - color2.r) <= tolerance &&
     Math.abs(color1.g - color2.g) <= tolerance &&
@@ -128,7 +128,7 @@ isNeighborColor = (color1, color2, tolerance) => {
   );
 };
 
-const saveMetadata = (_loadedImageObject) => {
+const saveMetadata = (_loadedImageObject: any) => {
   let shortName = _loadedImageObject.imgObject.filename.replace(
     /\.[^/.]+$/,
     ""
@@ -152,7 +152,7 @@ const saveMetadata = (_loadedImageObject) => {
   metadataList.push(tempMetadata);
 };
 
-const writeMetaData = (_data) => {
+const writeMetaData = (_data:any) => {
   fs.writeFileSync(`${buildDir}/_metadata.json`, _data);
 };
 
@@ -162,7 +162,7 @@ const startCreating = async () => {
     console.log("Please generate collection first.");
     return;
   }
-  let loadedImageObjects = [];
+  let loadedImageObjects:any[] = [];
   images.forEach((imgObject) => {
     loadedImageObjects.push(loadImgData(imgObject));
   });

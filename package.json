@@ -14,7 +14,7 @@
   "scripts": {
     "build": "ts-node index.ts",
     "generate": "ts-node index.ts",
-    "rarity": "node utils/rarity.js",
+    "rarity": "ts-node utils/rarity.ts",
     "preview": "ts-node utils/preview.ts",
     "pixelate": "ts-node utils/pixelate.ts",
     "update_info": "node utils/update_info.js",

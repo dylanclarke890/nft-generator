@@ -1,11 +1,12 @@
 import { Canvas, loadImage } from "canvas";
 import { writeFileSync } from "fs";
+import { IDNALayer } from "../interfaces/general";
 import { generalSettings } from "../src/config";
 import { log } from "./logger";
 
 const buildDir = generalSettings.buildDirectory;
 
-export async function loadLayerImg(_layer: any) {
+export async function loadLayerImg(_layer: IDNALayer): Promise<unknown> {
   try {
     return new Promise(async (resolve) => {
       const image = await loadImage(`${_layer.selectedElement.path}`);
@@ -16,17 +17,14 @@ export async function loadLayerImg(_layer: any) {
   }
 }
 
-export function saveImage(canvas: Canvas, _editionCount: number) {
+export function saveImg(canvas: Canvas, _editionCount: number) {
   writeFileSync(
     `${buildDir}/images/${_editionCount}.png`,
     canvas.toBuffer("image/png")
   );
 }
 
-export function saveMetaDataSingleFile(
-  _editionCount: number,
-  metaDataList: any[]
-) {
+export function saveMetaData(_editionCount: number, metaDataList: any[]) {
   const metadata = metaDataList.find(
     (meta: any) => meta.edition == _editionCount
   );
@@ -37,6 +35,6 @@ export function saveMetaDataSingleFile(
   );
 }
 
-export function writeMetaData(_data: any) {
+export function saveCollectionMetaData(_data: any) {
   writeFileSync(`${buildDir}/json/_metadata.json`, _data);
 }

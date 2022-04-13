@@ -9,6 +9,13 @@ export interface ILayer {
   bypassDNA: boolean;
 }
 
+export interface IDNALayer {
+  name: string;
+  blend: MODE;
+  opacity: number;
+  selectedElement: IElement;
+}
+
 export interface IElement {
   id: number;
   name: string;

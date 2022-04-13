@@ -6,13 +6,13 @@ import { format, generalSettings, gif, layerConfigs, network } from "./config";
 import { log } from "../services/logger";
 import {
   loadLayerImg,
-  saveImage,
-  saveMetaDataSingleFile,
-  writeMetaData,
+  saveImg,
+  saveMetaData,
+  saveCollectionMetaData,
 } from "../services/file-handling";
 import {
   cleanDna,
-  cleanLayerName,
+  getLayerName,
   filterDNAOptions,
   getRarityWeight,
   isDnaUnique,
@@ -20,14 +20,11 @@ import {
 import { getRandomElement, shuffle } from "../services/randomiser";
 import { addSolanaMetaData } from "../services/solana-helper";
 import { ILayersOrder } from "../interfaces/settings";
-import {
-  addToGif,
-  finishGifCreation,
-  startGifCreation,
-} from "../services/gif-helper";
+import { snapshot, finishGif, startGif } from "../services/gif-helper";
 import {
   IAttribute,
   IBaseMetaData,
+  IDNALayer,
   IElement,
   ILayer,
 } from "../interfaces/general";
@@ -57,7 +54,6 @@ export async function startCreating() {
   let editionCount = 1;
   let failedCount = 0;
   let abstractIndexes: number[] = [];
-
   const startPos = network == NETWORK.sol ? 0 : 1;
   const lastPos = layerConfigs[layerConfigs.length - 1].growEditionSizeTo;
   for (let i = startPos; i <= lastPos; i++) abstractIndexes.push(i);
@@ -71,22 +67,22 @@ export async function startCreating() {
       const newDna = createDna(layers);
       if (isDnaUnique(dnaList, newDna)) {
         const results = constructLayerToDna(newDna, layers);
-        const elements = results.map((element: any) => loadLayerImg(element));
+        const elements = results.map((res) => loadLayerImg(res));
         await Promise.all(elements).then((renderObjectArray) => {
           log("Clearing canvas");
           ctx.clearRect(0, 0, format.width, format.height);
           const i = abstractIndexes[0];
-          startGifCreation(canvas, ctx, i);
+          startGif(canvas, ctx, i);
           drawBackground(ctx);
           renderObjectArray.forEach((renderObject, index) => {
             drawElement(renderObject, index);
-            addToGif();
+            snapshot();
           });
-          finishGifCreation();
+          finishGif();
           log(`Editions left to create: ${abstractIndexes}`);
-          saveImage(canvas, i);
+          saveImg(canvas, i);
           addMetadata(newDna, i);
-          saveMetaDataSingleFile(i, metadataList);
+          saveMetaData(i, metadataList);
           console.log(`Created edition: ${i}, with DNA: ${sha1(newDna)}`);
         });
         dnaList.add(filterDNAOptions(newDna));
@@ -105,7 +101,7 @@ export async function startCreating() {
     }
     layerConfigIndex++;
   }
-  writeMetaData(JSON.stringify(metadataList, null, 2));
+  saveCollectionMetaData(JSON.stringify(metadataList, null, 2));
 }
 
 export function getElements(layerFolderName: string): IElement[] {
@@ -118,7 +114,7 @@ export function getElements(layerFolderName: string): IElement[] {
       }
       return {
         id: index,
-        name: cleanLayerName(i),
+        name: getLayerName(i),
         filename: i,
         path: `${path}/${i}`,
         weight: getRarityWeight(i),
@@ -155,18 +151,15 @@ const drawElement = (content: any, i: number) => {
   addAttributes(content);
 };
 
-const constructLayerToDna = (_dna = "", _layers: ILayer[] = []) =>
-  _layers.map((layer, index) => {
-    const selectedElement = layer.elements.find(
+const constructLayerToDna = (_dna = "", _layers: ILayer[] = []): IDNALayer[] =>
+  _layers.map((layer, index) => ({
+    name: layer.name,
+    blend: layer.blend,
+    opacity: layer.opacity,
+    selectedElement: layer.elements.find(
       (e) => e.id == cleanDna(_dna.split(generalSettings.dnaDelimiter)[index])
-    );
-    return {
-      name: layer.name,
-      blend: layer.blend,
-      opacity: layer.opacity,
-      selectedElement,
-    };
-  });
+    )!,
+  }));
 
 const createDna = (_layers: ILayer[]) => {
   let randNum: string[] = [];

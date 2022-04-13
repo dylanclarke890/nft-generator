@@ -1,6 +1,6 @@
 import { generalSettings } from "../src/config";
 
-export function cleanLayerName(_str: string) {
+export function getLayerName(_str: string) {
   const nameWithoutExtension = _str.slice(0, -4);
   const nameWithoutWeight = nameWithoutExtension
     .split(generalSettings.rarityDelimiter)

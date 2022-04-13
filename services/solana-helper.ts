@@ -1,6 +1,10 @@
+import { ISolanaMetaData } from "../interfaces/solana";
 import { generalSettings, solanaMetadata } from "../src/config";
 
-export function addSolanaMetaData(metadata: any, edition: number) {
+export function addSolanaMetaData(
+  metadata: any,
+  edition: number
+): ISolanaMetaData {
   return {
     name: metadata.name,
     symbol: solanaMetadata.symbol,
@@ -9,7 +13,6 @@ export function addSolanaMetaData(metadata: any, edition: number) {
     image: `${edition}.png`,
     external_url: solanaMetadata.external_url,
     edition,
-    ...generalSettings.extraMetadata,
     attributes: metadata.attributes,
     properties: {
       files: [
@@ -21,5 +24,6 @@ export function addSolanaMetaData(metadata: any, edition: number) {
       category: "image",
       creators: solanaMetadata.creators,
     },
+    ...generalSettings.extraMetadata,
   };
 }

@@ -10,9 +10,9 @@ import {
   IPreviewSettings,
   ITextSettings,
 } from "../interfaces/settings";
-import ISolanaData from "../interfaces/ISolanaData";
 import MODE from "../constants/blend_mode";
 import NETWORK from "../constants/network";
+import { ISolanaData } from "../interfaces/solana";
 
 const basePath = process.cwd();
 const generalSettings: IGeneralSettings = {

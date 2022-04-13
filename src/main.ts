@@ -2,7 +2,6 @@ import NETWORK from "../constants/network";
 import { existsSync, mkdirSync, readdirSync, rmSync } from "fs";
 import sha1 from "sha1";
 import { createCanvas } from "canvas";
-
 import {
   background,
   format,
@@ -35,10 +34,12 @@ import {
   finishGifCreation,
   startGifCreation,
 } from "../services/gif-helper";
+import { IBaseMetaData, IElement, ILayer } from "../interfaces/general";
+import MODE from "../constants/blend_mode";
 
-var metadataList: any[] = [];
-var attributesList: any[] = [];
-var dnaList = new Set();
+let metadataList: IBaseMetaData[] = [];
+let attributesList: any[] = [];
+let dnaList = new Set();
 
 const canvas = createCanvas(format.width, format.height);
 const ctx: any = canvas.getContext("2d");
@@ -112,7 +113,7 @@ export async function startCreating() {
   writeMetaData(JSON.stringify(metadataList, null, 2));
 }
 
-export function getElements(layerFolderName: string) {
+export function getElements(layerFolderName: string): IElement[] {
   const path = `${generalSettings.layersDirectory}/${layerFolderName}`;
   return readdirSync(path)
     .filter((item) => !/(^|\/)\.[^\/\.]/g.test(item))
@@ -130,21 +131,18 @@ export function getElements(layerFolderName: string) {
     });
 }
 
-const layersSetup = (layersOrder: ILayersOrder[]) =>
+const layersSetup = (layersOrder: ILayersOrder[]): ILayer[] =>
   layersOrder.map((layerObj, index) => ({
     id: index,
     elements: getElements(layerObj.name),
     name: layerObj.options?.["displayName"] ?? layerObj.name,
-    blend: layerObj.options?.["blend"] ?? "source-over",
+    blend: layerObj.options?.["blend"] ?? MODE.sourceOver,
     opacity: layerObj.options?.["opacity"] ?? 1,
     bypassDNA: layerObj.options?.["bypassDNA"] ?? false,
   }));
 
-const genColor = () => {
-  let hue = Math.floor(Math.random() * 360);
-  let pastel = `hsl(${hue}, 100%, ${background.brightness})`;
-  return pastel;
-};
+const genColor = () =>
+  `hsl(${Math.floor(Math.random() * 360)}, 100%, ${background.brightness})`;
 
 const drawBackground = () => {
   if (background.generate) {
@@ -154,8 +152,8 @@ const drawBackground = () => {
 };
 
 const addMetadata = (_dna: string, _edition: number) => {
-  let dateTime = Date.now();
-  let tempMetadata: any = {
+  const dateTime = Date.now();
+  let metaData: IBaseMetaData = {
     name: `${generalMetaData.namePrefix} #${_edition}`,
     description: generalMetaData.description,
     image: `${generalMetaData.baseUri}/${_edition}.png`,
@@ -166,10 +164,8 @@ const addMetadata = (_dna: string, _edition: number) => {
     attributes: attributesList,
     compiler: "CK NFT Generator",
   };
-  if (network == NETWORK.sol) {
-    tempMetadata = addSolanaMetaData(tempMetadata, _edition);
-  }
-  metadataList.push(tempMetadata);
+  if (network == NETWORK.sol) metaData = addSolanaMetaData(metaData, _edition);
+  metadataList.push(metaData);
   attributesList = [];
 };
 

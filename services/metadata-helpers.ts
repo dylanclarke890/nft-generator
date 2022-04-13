@@ -5,7 +5,7 @@ export function cleanLayerName(_str: string) {
   const nameWithoutWeight = nameWithoutExtension
     .split(generalSettings.rarityDelimiter)
     .shift();
-  return nameWithoutWeight;
+  return nameWithoutWeight!;
 }
 
 export function getRarityWeight(_str: string) {

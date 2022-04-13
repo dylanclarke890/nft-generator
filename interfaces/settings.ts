@@ -60,7 +60,7 @@ export interface ILayersOptions {
   blend?: MODE;
   bypassDNA?: boolean;
   displayName?: string;
-  opacity?: string;
+  opacity?: number;
 }
 
 export interface IPixelFormatSettings {

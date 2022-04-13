@@ -1,22 +1,23 @@
 import fs from "fs";
 import path from "path";
 import { createCanvas, loadImage } from "canvas";
-import { format, generalMetaData, generalSettings } from "../src/config";
-import { randomIntFromInterval } from "../services/randomiser";
 import {
-  IColor,
-  IImage,
-  IImageData,
-  IRareColor,
-} from "../interfaces/generate-metadata";
-import { IAttribute } from "../interfaces/general";
+  format,
+  generalMetaData,
+  generalSettings,
+  generateMetadata,
+} from "../src/config";
+import { randomIntFromInterval } from "../services/randomiser";
+import { IColor, IImage, IImageData } from "../interfaces/generate-metadata";
+import { IAttribute, IMetaData } from "../interfaces/general";
+import { writeMetaData } from "../services/file-handling";
 
 const buildDir = `${generalSettings.buildDirectory}/json`;
 const inputDir = `${generalSettings.buildDirectory}/images`;
 
 const canvas = createCanvas(format.width, format.height);
 const ctx = canvas.getContext("2d");
-const metadataList: any[] = [];
+const metadataList: IMetaData[] = [];
 
 const buildSetup = () => {
   if (fs.existsSync(buildDir)) {
@@ -25,7 +26,7 @@ const buildSetup = () => {
   fs.mkdirSync(buildDir);
 };
 
-const getImages = (_dir: string): IImage[] | null => {
+const getImages = (_dir: string): IImage[] => {
   try {
     return fs
       .readdirSync(_dir)
@@ -40,7 +41,8 @@ const getImages = (_dir: string): IImage[] | null => {
         path: `${_dir}/${i}`,
       }));
   } catch {
-    return null;
+    console.error("Please generate collection first.");
+    process.exit();
   }
 };
 
@@ -57,16 +59,9 @@ const loadImgData = async (imgObject: IImage) => {
 const draw = (_imgObject: IImageData) =>
   ctx.drawImage(_imgObject.loadedImage, 0, 0, canvas.width, canvas.height);
 
-const addRarity = (): IAttribute[] => {
-  const tolerance = 15;
-  const rareColorBase = "NOT a Hot Dog";
-  const rareColor: IRareColor[] = [
-    { name: "Hot Dog", rgb: { r: 192, g: 158, b: 131 } },
-    { name: "Hot Dog", rgb: { r: 128, g: 134, b: 90 } },
-    { name: "Hot Dog", rgb: { r: 113, g: 65, b: 179 } },
-    { name: "Hot Dog", rgb: { r: 162, g: 108, b: 67 } },
-  ];
+const floor = (num: number) => ~~num;
 
+const addRarity = (): IAttribute[] => {
   let i = -4;
   let count = 0;
   const rgbData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
@@ -77,15 +72,13 @@ const addRarity = (): IAttribute[] => {
     newRgb.g += rgbData[i + 1];
     newRgb.b += rgbData[i + 2];
   }
-  newRgb.r = ~~(newRgb.r / count);
-  newRgb.g = ~~(newRgb.g / count);
-  newRgb.b = ~~(newRgb.b / count);
+  newRgb.r = floor(newRgb.r / count);
+  newRgb.g = floor(newRgb.g / count);
+  newRgb.b = floor(newRgb.b / count);
 
-  let rarity = rareColorBase;
-  rareColor.forEach((color) => {
-    if (isNeighborColor(newRgb, color.rgb, tolerance)) {
-      rarity = color.name;
-    }
+  let rarity = generateMetadata.rareColorBase;
+  generateMetadata.rareColor.forEach((color) => {
+    if (isNeighborColor(newRgb, color.rgb)) rarity = color.name;
   });
   console.log(rarity, newRgb);
   return [
@@ -104,10 +97,10 @@ const addRarity = (): IAttribute[] => {
   ];
 };
 
-const isNeighborColor = (color1: IColor, color2: IColor, tolerance: number) =>
-  Math.abs(color1.r - color2.r) <= tolerance &&
-  Math.abs(color1.g - color2.g) <= tolerance &&
-  Math.abs(color1.b - color2.b) <= tolerance;
+const isNeighborColor = (color1: IColor, color2: IColor) =>
+  Math.abs(color1.r - color2.r) <= generateMetadata.tolerance &&
+  Math.abs(color1.g - color2.g) <= generateMetadata.tolerance &&
+  Math.abs(color1.b - color2.b) <= generateMetadata.tolerance;
 
 const saveMetadata = (_loadedImageObject: IImageData) => {
   const shortName = _loadedImageObject.imgObject.filename.replace(
@@ -115,7 +108,7 @@ const saveMetadata = (_loadedImageObject: IImageData) => {
     ""
   );
   const attributes = addRarity();
-  const tempMetadata = {
+  const tempMetadata: IMetaData = {
     name: `${generalMetaData.namePrefix} #${shortName}`,
     description: generalMetaData.description,
     image: `${generalMetaData.baseUri}/${shortName}.png`,
@@ -130,20 +123,9 @@ const saveMetadata = (_loadedImageObject: IImageData) => {
   metadataList.push(tempMetadata);
 };
 
-const writeMetaData = (_data: string) => {
-  fs.writeFileSync(`${buildDir}/_metadata.json`, _data);
-};
-
 const startCreating = async () => {
   const images = getImages(inputDir);
-  if (images == null) {
-    console.error("Please generate collection first.");
-    process.exit();
-  }
-  const loadedImageObjects: Promise<IImageData>[] = [];
-  images.forEach((imgObject) => {
-    loadedImageObjects.push(loadImgData(imgObject));
-  });
+  const loadedImageObjects = images.map((imgObject) => loadImgData(imgObject));
   await Promise.all(loadedImageObjects).then((loadedImageObjectArray) => {
     loadedImageObjectArray.forEach((loaded) => {
       draw(loaded);

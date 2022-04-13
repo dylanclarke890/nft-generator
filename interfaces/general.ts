@@ -38,8 +38,8 @@ export interface IBaseMetaData {
 }
 
 export interface IMetaData extends IBaseMetaData {
-  dna: string;
-  date: number;
   compiler: string;
+  date?: number;
+  dna?: string;
   [key: string]: any;
 }

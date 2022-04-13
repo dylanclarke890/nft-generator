@@ -1,6 +1,6 @@
 import { Canvas, loadImage } from "canvas";
 import { writeFileSync } from "fs";
-import { IDNALayer } from "../interfaces/general";
+import { IBaseMetaData, IDNALayer } from "../interfaces/general";
 import { generalSettings } from "../src/config";
 import { logIfDebug } from "./logger";
 
@@ -24,11 +24,14 @@ export function saveImg(canvas: Canvas, _editionCount: number) {
   );
 }
 
-export function saveMetaData(_editionCount: number, metaDataList: any[]) {
-  const metadata = metaDataList.find(
-    (meta: any) => meta.edition == _editionCount
+export function saveMetaData(
+  _editionCount: number,
+  metaDataList: IBaseMetaData[]
+) {
+  const metadata = metaDataList.find((meta) => meta.edition == _editionCount);
+  logIfDebug(
+    `Writing metadata for ${_editionCount}: ${JSON.stringify(metadata)}`
   );
-  logIfDebug(`Writing metadata for ${_editionCount}: ${JSON.stringify(metadata)}`);
   writeFileSync(
     `${buildDir}/json/${_editionCount}.json`,
     JSON.stringify(metadata, null, 2)
@@ -36,5 +39,9 @@ export function saveMetaData(_editionCount: number, metaDataList: any[]) {
 }
 
 export function saveCollectionMetaData(_data: any) {
+  writeFileSync(`${buildDir}/json/_metadata.json`, _data);
+}
+
+export function writeMetaData(_data: string) {
   writeFileSync(`${buildDir}/json/_metadata.json`, _data);
 }

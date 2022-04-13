@@ -1,4 +1,5 @@
 import MODE from "../constants/blend_mode";
+import { IRareColor } from "./generate-metadata";
 
 export interface IBackgroundSettings {
   brightness: string;
@@ -81,8 +82,20 @@ export interface ITextSettings {
   xGap: number;
   yGap: number;
   align: "center" | "end" | "left" | "right" | "start";
-  baseline: "alphabetic" | "bottom" | "hanging" | "ideographic" | "middle" | "top";
+  baseline:
+    | "alphabetic"
+    | "bottom"
+    | "hanging"
+    | "ideographic"
+    | "middle"
+    | "top";
   weight: string;
   family: string;
   spacer: string;
+}
+
+export interface IGenerateMetaDataSettings {
+  tolerance: number;
+  rareColorBase: string;
+  rareColor: IRareColor[];
 }

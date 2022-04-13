@@ -3,6 +3,7 @@ import {
   IFormatSettings,
   IGeneralMetaData,
   IGeneralSettings,
+  IGenerateMetaDataSettings,
   IGifPreviewSettings,
   IGifSettings,
   ILayerConfig,
@@ -103,6 +104,17 @@ const preview: IPreviewSettings = {
   thumbWidth: 50,
 };
 
+const generateMetadata: IGenerateMetaDataSettings = {
+  tolerance: 15,
+  rareColorBase: "NOT a Hot Dog",
+  rareColor: [
+    { name: "Hot Dog", rgb: { r: 192, g: 158, b: 131 } },
+    { name: "Hot Dog", rgb: { r: 128, g: 134, b: 90 } },
+    { name: "Hot Dog", rgb: { r: 113, g: 65, b: 179 } },
+    { name: "Hot Dog", rgb: { r: 162, g: 108, b: 67 } },
+  ],
+};
+
 const preview_gif: IGifPreviewSettings = {
   numberOfImages: 5,
   order: "ASC",
@@ -113,16 +125,17 @@ const preview_gif: IGifPreviewSettings = {
 };
 
 export {
+  background,
   format,
   generalMetaData,
-  background,
   generalSettings,
+  generateMetadata,
+  gif,
   layerConfigs,
-  preview,
   pixelFormat,
-  text,
+  preview,
+  preview_gif,
   network,
   solanaMetadata,
-  gif,
-  preview_gif,
+  text,
 };

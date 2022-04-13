@@ -1,5 +1,6 @@
 import MODE from "../constants/blend_mode";
 import NETWORK from "../constants/network";
+import ILayerConfig from "../interfaces/ILayerConfig";
 
 const network = NETWORK.eth;
 
@@ -21,7 +22,7 @@ const solanaMetadata = {
 };
 
 // If you have selected Solana then the collection starts from 0 automatically
-const layerConfigurations = [
+const layerConfigurations: ILayerConfig[] = [
   {
     growEditionSizeTo: 5,
     layersOrder: [

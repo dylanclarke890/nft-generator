@@ -1,7 +1,7 @@
 import GifEncoder from "gif-encoder-2";
 import { writeFile } from "fs";
 
-class HashLipsGiffer {
+export default class HashLipsGiffer {
   canvas: any;
   ctx: any;
   fileName: any;
@@ -9,6 +9,7 @@ class HashLipsGiffer {
   quality: any;
   delay: any;
   gifEncoder: any;
+  
   constructor(
     _canvas: any,
     _ctx: any,
@@ -48,5 +49,3 @@ class HashLipsGiffer {
     console.log(`Created gif at ${this.fileName}`);
   };
 }
-
-export default HashLipsGiffer;

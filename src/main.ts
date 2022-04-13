@@ -248,7 +248,7 @@ const constructLayerToDna = (_dna = "", _layers: any = []) => {
  * @param {String} _dna New DNA string
  * @returns new DNA string with any items that should be filtered, removed.
  */
-const filterDNAOptions = (_dna: any) => {
+const filterDNAOptions = (_dna: string) => {
   const dnaItems = _dna.split(DNA_DELIMITER);
   const filteredDNA = dnaItems.filter((element: any) => {
     const query = /(\?.*$)/;
@@ -275,7 +275,7 @@ const filterDNAOptions = (_dna: any) => {
  * @param {String} _dna The entire newDNA string
  * @returns Cleaned DNA string without querystring parameters.
  */
-const removeQueryStrings = (_dna: any) => {
+const removeQueryStrings = (_dna: string) => {
   const query = /(\?.*$)/;
   return _dna.replace(query, "");
 };
@@ -326,9 +326,9 @@ const saveMetaDataSingleFile = (_editionCount: any) => {
   );
 };
 
-function shuffle(array: any) {
+function shuffle(array: any[]) {
   let currentIndex = array.length,
-    randomIndex;
+    randomIndex: number;
   while (currentIndex != 0) {
     randomIndex = Math.floor(Math.random() * currentIndex);
     currentIndex--;
@@ -344,7 +344,7 @@ const startCreating = async () => {
   let layerConfigIndex = 0;
   let editionCount = 1;
   let failedCount = 0;
-  let abstractedIndexes: any = [];
+  let abstractedIndexes: number[] = [];
   for (
     let i = network == NETWORK.sol ? 0 : 1;
     i <= layerConfigurations[layerConfigurations.length - 1].growEditionSizeTo;

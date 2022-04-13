@@ -2,15 +2,7 @@ import NETWORK from "../constants/network";
 import { existsSync, mkdirSync, readdirSync, rmSync } from "fs";
 import sha1 from "sha1";
 import { createCanvas } from "canvas";
-import {
-  background,
-  format,
-  generalSettings,
-  gif,
-  layerConfigs,
-  network,
-  text,
-} from "./config";
+import { format, generalSettings, gif, layerConfigs, network } from "./config";
 import { log } from "../services/logger";
 import {
   loadLayerImg,
@@ -41,13 +33,14 @@ import {
 } from "../interfaces/general";
 import MODE from "../constants/blend_mode";
 import { addMetaData } from "../services/metadata-helper";
+import { addCanvasContent, drawBackground } from "../services/canvas-helper";
 
 let metadataList: IBaseMetaData[] = [];
 let attributesList: IAttribute[] = [];
 let dnaList = new Set();
 
 const canvas = createCanvas(format.width, format.height);
-const ctx: any = canvas.getContext("2d");
+const ctx = canvas.getContext("2d");
 ctx.imageSmoothingEnabled = format.smoothing;
 
 export function buildSetup() {
@@ -71,11 +64,9 @@ export async function startCreating() {
   if (generalSettings.shuffleLayerConfigs)
     abstractIndexes = shuffle(abstractIndexes);
   log(`Editions left to create: ${abstractIndexes}`);
-
   while (layerConfigIndex < layerConfigs.length) {
     const layerConfig = layerConfigs[layerConfigIndex];
     const layers = layersSetup(layerConfig.layersOrder);
-
     while (editionCount <= layerConfig.growEditionSizeTo) {
       const newDna = createDna(layers);
       if (isDnaUnique(dnaList, newDna)) {
@@ -84,20 +75,19 @@ export async function startCreating() {
         await Promise.all(elements).then((renderObjectArray) => {
           log("Clearing canvas");
           ctx.clearRect(0, 0, format.width, format.height);
-          const index = abstractIndexes[0];
-          startGifCreation(canvas, ctx, index);
-          drawBackground();
-
+          const i = abstractIndexes[0];
+          startGifCreation(canvas, ctx, i);
+          drawBackground(ctx);
           renderObjectArray.forEach((renderObject, index) => {
-            drawElement(renderObject, index, layerConfig.layersOrder.length);
+            drawElement(renderObject, index);
             addToGif();
           });
           finishGifCreation();
           log(`Editions left to create: ${abstractIndexes}`);
-          saveImage(canvas, index);
-          addMetadata(newDna, index);
-          saveMetaDataSingleFile(index, metadataList);
-          console.log(`Created edition: ${index}, with DNA: ${sha1(newDna)}`);
+          saveImage(canvas, i);
+          addMetadata(newDna, i);
+          saveMetaDataSingleFile(i, metadataList);
+          console.log(`Created edition: ${i}, with DNA: ${sha1(newDna)}`);
         });
         dnaList.add(filterDNAOptions(newDna));
         editionCount++;
@@ -146,16 +136,6 @@ const layersSetup = (layersOrder: ILayersOrder[]): ILayer[] =>
     bypassDNA: layerObj.options?.["bypassDNA"] ?? false,
   }));
 
-const genColor = () =>
-  `hsl(${Math.floor(Math.random() * 360)}, 100%, ${background.brightness})`;
-
-const drawBackground = () => {
-  if (background.generate) {
-    ctx.fillStyle = background.static ? background.default : genColor();
-    ctx.fillRect(0, 0, format.width, format.height);
-  }
-};
-
 const addMetadata = (_dna: string, _edition: number) => {
   let metaData: IBaseMetaData = addMetaData(_dna, _edition, attributesList);
   if (network == NETWORK.sol) metaData = addSolanaMetaData(metaData, _edition);
@@ -164,50 +144,21 @@ const addMetadata = (_dna: string, _edition: number) => {
 };
 
 const addAttributes = (_element: any) => {
-  const selectedElement = _element.layer.selectedElement;
   attributesList.push({
     trait_type: _element.layer.name,
-    value: selectedElement.name,
+    value: _element.layer.selectedElement.name,
   });
 };
 
-const addText = (_sig: string, x: number, y: number) => {
-  ctx.fillStyle = text.color;
-  ctx.font = `${text.weight} ${text.size}pt ${text.family}`;
-  ctx.textBaseline = text.baseline;
-  ctx.textAlign = text.align;
-  ctx.fillText(_sig, x, y);
+const drawElement = (content: any, i: number) => {
+  addCanvasContent(content, i, ctx);
+  addAttributes(content);
 };
 
-const drawElement = (
-  _renderObject: any,
-  _index: number,
-  _layersLen: number
-) => {
-  ctx.globalAlpha = _renderObject.layer.opacity;
-  ctx.globalCompositeOperation = _renderObject.layer.blend;
-  text.only
-    ? addText(
-        `${_renderObject.layer.name}${text.spacer}${_renderObject.layer.selectedElement.name}`,
-        text.xGap,
-        text.yGap * (_index + 1)
-      )
-    : ctx.drawImage(
-        _renderObject.loadedImage,
-        0,
-        0,
-        format.width,
-        format.height
-      );
-
-  addAttributes(_renderObject);
-};
-
-const constructLayerToDna = (_dna = "", _layers: any = []) =>
-  _layers.map((layer: any, index: number) => {
+const constructLayerToDna = (_dna = "", _layers: ILayer[] = []) =>
+  _layers.map((layer, index) => {
     const selectedElement = layer.elements.find(
-      (e: any) =>
-        e.id == cleanDna(_dna.split(generalSettings.dnaDelimiter)[index])
+      (e) => e.id == cleanDna(_dna.split(generalSettings.dnaDelimiter)[index])
     );
     return {
       name: layer.name,
@@ -217,11 +168,11 @@ const constructLayerToDna = (_dna = "", _layers: any = []) =>
     };
   });
 
-const createDna = (_layers: any[]) => {
+const createDna = (_layers: ILayer[]) => {
   let randNum: string[] = [];
-  _layers.forEach((layer: any) => {
+  _layers.forEach((layer) => {
     let totalWeight = 0;
-    layer.elements.forEach((element: any) => {
+    layer.elements.forEach((element) => {
       totalWeight += element.weight;
     });
     getRandomElement(layer, totalWeight, randNum);

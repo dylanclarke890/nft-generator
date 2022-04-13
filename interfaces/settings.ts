@@ -80,8 +80,8 @@ export interface ITextSettings {
   size: number;
   xGap: number;
   yGap: number;
-  align: "left" | "center" | "right";
-  baseline: string;
+  align: "center" | "end" | "left" | "right" | "start";
+  baseline: "alphabetic" | "bottom" | "hanging" | "ideographic" | "middle" | "top";
   weight: string;
   family: string;
   spacer: string;

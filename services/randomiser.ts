@@ -1,3 +1,5 @@
+import { background } from "../src/config";
+
 export function shuffle(array: any[]) {
   let currentIndex = array.length,
     randomIndex: number;
@@ -10,6 +12,10 @@ export function shuffle(array: any[]) {
     ];
   }
   return array;
+}
+
+export function genColor() {
+    return `hsl(${Math.floor(Math.random() * 360)}, 100%, ${background.brightness})`;
 }
 
 export function getRandomElement(

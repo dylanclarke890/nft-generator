@@ -27,7 +27,7 @@ export interface IGeneralSettings {
   layersDirectory: string;
   rarityDelimiter: string;
   uniqueDnaTolerance: number;
-  shuffleLayerConfigurations: boolean;
+  shuffleLayerConfigs: boolean;
 }
 
 export interface IGifPreviewSettings {

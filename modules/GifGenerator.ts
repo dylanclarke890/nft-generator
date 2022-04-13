@@ -1,22 +1,23 @@
 import GifEncoder from "gif-encoder-2";
 import { writeFile } from "fs";
+import { Canvas } from "canvas";
 
-export default class HashLipsGiffer {
-  canvas: any;
-  ctx: any;
-  fileName: any;
-  repeat: any;
-  quality: any;
-  delay: any;
+export default class GifGenerator {
   gifEncoder: any;
-  
+  canvas: Canvas;
+  ctx: any;
+  fileName: string;
+  repeat: number;
+  quality: number;
+  delay: number;
+
   constructor(
-    _canvas: any,
+    _canvas: Canvas,
     _ctx: any,
-    _fileName: any,
-    _repeat: any,
-    _quality: any,
-    _delay: any
+    _fileName: string,
+    _repeat: number,
+    _quality: number,
+    _delay: number
   ) {
     this.canvas = _canvas;
     this.ctx = _ctx;

@@ -2,7 +2,7 @@ import fs from "fs";
 const basePath = process.cwd();
 const layersDir = `${basePath}/layers`;
 
-import { layerConfigurations } from "../src/config";
+import { layerConfigs } from "../src/config";
 import { getElements } from "../src/main";
 
 // read json data
@@ -13,7 +13,7 @@ let editionSize = data.length;
 let rarityData: any = [];
 
 // intialize layers to chart
-layerConfigurations.forEach((config: any) => {
+layerConfigs.forEach((config: any) => {
   let layers = config.layersOrder;
 
   layers.forEach((layer: any) => {

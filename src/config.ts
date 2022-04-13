@@ -22,7 +22,7 @@ const generalSettings: IGeneralSettings = {
   extraMetadata: {},
   layersDirectory: `${basePath}/layers`,
   rarityDelimiter: "#",
-  shuffleLayerConfigurations: false,
+  shuffleLayerConfigs: false,
   uniqueDnaTolerance: 10000,
 };
 
@@ -117,7 +117,7 @@ export {
   generalMetaData,
   background,
   generalSettings,
-  layerConfigurations,
+  layerConfigurations as layerConfigs,
   preview,
   pixelFormat,
   text,

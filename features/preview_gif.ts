@@ -6,7 +6,7 @@ const imageDir = `${buildDir}/images`;
 import { preview_gif, format } from "../src/config";
 const canvas = createCanvas(format.width, format.height);
 const ctx = canvas.getContext("2d");
-import HashLipsGiffer from "../modules/HashlipsGiffer";
+import GifGenerator from "../modules/GifGenerator";
 let hashlipsGiffer: any = null;
 
 const loadImg = async (_img: any) => {
@@ -45,7 +45,7 @@ const saveProjectPreviewGIF = async (_data: any) => {
 
     ctx.clearRect(0, 0, width, height);
 
-    hashlipsGiffer = new HashLipsGiffer(
+    hashlipsGiffer = new GifGenerator(
       canvas,
       ctx,
       `${previewPath}`,

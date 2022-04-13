@@ -1,5 +1,5 @@
 import NETWORK from "../constants/network";
-import { existsSync, mkdirSync, readdirSync, writeFileSync, rmSync } from "fs";
+import { existsSync, mkdirSync, readdirSync, rmSync } from "fs";
 import sha1 from "sha1";
 import { createCanvas } from "canvas";
 import {
@@ -22,7 +22,7 @@ import {
   saveMetaDataSingleFile,
   writeMetaData,
 } from "../services/file-handling";
-import { cleanLayerName, getRarityWeight } from "../services/metadata-helpers";
+import { cleanDna, cleanLayerName, filterDNAOptions, getRarityWeight, isDnaUnique } from "../services/metadata-helpers";
 
 const canvas = createCanvas(format.width, format.height);
 const ctx: any = canvas.getContext("2d");
@@ -134,7 +134,8 @@ export async function startCreating() {
   writeMetaData(JSON.stringify(metadataList, null, 2));
 }
 
-export function getElements(path: string) {
+export function getElements(layerFolderName: string) {
+  const path = `${generalSettings.layersDirectory}/${layerFolderName}`;
   return readdirSync(path)
     .filter((item) => !/(^|\/)\.[^\/\.]/g.test(item))
     .map((i, index) => {
@@ -151,25 +152,15 @@ export function getElements(path: string) {
     });
 }
 
-const cleanDna = (_str: string) => {
-  const withoutOptions = removeQueryStrings(_str);
-  var dna = Number(withoutOptions.split(":").shift());
-  return dna;
-};
-
-const layersSetup = (layersOrder: ILayersOrder[]) => {
-  const layers = layersOrder.map((layerObj, index) => ({
+const layersSetup = (layersOrder: ILayersOrder[]) =>
+  layersOrder.map((layerObj, index) => ({
     id: index,
-    elements: getElements(
-      `${generalSettings.layersDirectory}/${layerObj.name}/`
-    ),
+    elements: getElements(layerObj.name),
     name: layerObj.options?.["displayName"] ?? layerObj.name,
     blend: layerObj.options?.["blend"] ?? "source-over",
     opacity: layerObj.options?.["opacity"] ?? 1,
     bypassDNA: layerObj.options?.["bypassDNA"] ?? false,
   }));
-  return layers;
-};
 
 const genColor = () => {
   let hue = Math.floor(Math.random() * 360);
@@ -279,51 +270,6 @@ const constructLayerToDna = (_dna = "", _layers: any = []) => {
     };
   });
   return mappedDnaToLayers;
-};
-
-/**
- * In some cases a DNA string may contain optional query parameters for options
- * such as bypassing the DNA isUnique check, this function filters out those
- * items without modifying the stored DNA.
- *
- * @param {String} _dna New DNA string
- * @returns new DNA string with any items that should be filtered, removed.
- */
-const filterDNAOptions = (_dna: string) => {
-  const dnaItems = _dna.split(generalSettings.dnaDelimiter);
-  const filteredDNA = dnaItems.filter((element: any) => {
-    const query = /(\?.*$)/;
-    const querystring = query.exec(element);
-    if (!querystring) {
-      return true;
-    }
-    const options: any = querystring[1].split("&").reduce((r, setting) => {
-      const keyPairs = setting.split("=");
-      return { ...r, [keyPairs[0]]: keyPairs[1] };
-    }, []);
-
-    return options.bypassDNA;
-  });
-
-  return filteredDNA.join(generalSettings.dnaDelimiter);
-};
-
-/**
- * Cleaning function for DNA strings. When DNA strings include an option, it
- * is added to the filename with a ?setting=value query string. It needs to be
- * removed to properly access the file name before Drawing.
- *
- * @param {String} _dna The entire newDNA string
- * @returns Cleaned DNA string without querystring parameters.
- */
-const removeQueryStrings = (_dna: string) => {
-  const query = /(\?.*$)/;
-  return _dna.replace(query, "");
-};
-
-const isDnaUnique = (_DnaList = new Set(), _dna = "") => {
-  const _filteredDNA = filterDNAOptions(_dna);
-  return !_DnaList.has(_filteredDNA);
 };
 
 const createDna = (_layers: any) => {

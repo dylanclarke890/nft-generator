@@ -1,6 +1,6 @@
-const NETWORK = {
-  eth: "eth",
-  sol: "sol",
-};
+enum NETWORK {
+  eth = "eth",
+  sol = "sol",
+}
 
 export default NETWORK;

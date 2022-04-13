@@ -1,15 +1,29 @@
+import {
+  IBackgroundSettings,
+  IFormatSettings,
+  IGifPreviewSettings,
+  IGifSettings,
+  ILayerConfig,
+  IPixelFormatSettings,
+  IPreviewSettings,
+  ITextSettings,
+} from "../interfaces/settings";
+import ISolanaData from "../interfaces/ISolanaData";
 import MODE from "../constants/blend_mode";
 import NETWORK from "../constants/network";
-import ILayerConfig from "../interfaces/ILayerConfig";
 
-const network = NETWORK.eth;
+const debugLogs = false;
+const extraMetadata = {};
+const rarityDelimiter = "#";
+const uniqueDnaTorrance = 10000;
 
 // General metadata for Ethereum
 const namePrefix = "My First Collection";
 const description = "My first description for my first collection";
 const baseUri = "ipfs://NewUriToReplace";
 
-const solanaMetadata = {
+const network = NETWORK.eth;
+const solanaMetadata: ISolanaData = {
   symbol: "YC",
   seller_fee_basis_points: 1000, // Define how much % you want from secondary market sales 1000 = 10%
   external_url: "https://www.youtube.com/c/hashlipsnft",
@@ -21,7 +35,7 @@ const solanaMetadata = {
   ],
 };
 
-// If you have selected Solana then the collection starts from 0 automatically
+// If network type = "sol" is selected count starts at 0.
 const layerConfigurations: ILayerConfig[] = [
   {
     growEditionSizeTo: 5,
@@ -33,25 +47,22 @@ const layerConfigurations: ILayerConfig[] = [
     ],
   },
 ];
-
 const shuffleLayerConfigurations = false;
 
-const debugLogs = false;
-
-const format = {
-  width: 512,
+const format: IFormatSettings = {
   height: 512,
   smoothing: false,
+  width: 512,
 };
 
-const gif = {
-  export: false,
-  repeat: 0,
-  quality: 100,
+const gif: IGifSettings = {
   delay: 500,
+  export: false,
+  quality: 100,
+  repeat: 0,
 };
 
-const text = {
+const text: ITextSettings = {
   only: false,
   color: "#ffffff",
   size: 20,
@@ -64,33 +75,27 @@ const text = {
   spacer: " => ",
 };
 
-const pixelFormat = {
+const pixelFormat: IPixelFormatSettings = {
   ratio: 2 / 128,
 };
 
-const background = {
-  generate: true,
+const background: IBackgroundSettings = {
   brightness: "80%",
-  static: false,
   default: "#000000",
+  generate: true,
+  static: false,
 };
 
-const extraMetadata = {};
-
-const rarityDelimiter = "#";
-
-const uniqueDnaTorrance = 10000;
-
-const preview = {
+const preview: IPreviewSettings = {
+  imageName: "preview.png",
+  imageRatio: format.height / format.width,
   thumbPerRow: 5,
   thumbWidth: 50,
-  imageRatio: format.height / format.width,
-  imageName: "preview.png",
 };
 
-const preview_gif = {
+const preview_gif: IGifPreviewSettings = {
   numberOfImages: 5,
-  order: "ASC", // ASC, DESC, MIXED
+  order: "ASC",
   repeat: 0,
   quality: 100,
   delay: 500,

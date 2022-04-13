@@ -3,7 +3,7 @@ import { existsSync, mkdirSync, readdirSync, rmSync } from "fs";
 import sha1 from "sha1";
 import { createCanvas } from "canvas";
 import { format, generalSettings, gif, layerConfigs, network } from "./config";
-import { log } from "../services/logger";
+import { logIfDebug } from "../services/logger";
 import {
   loadLayerImg,
   saveImg,
@@ -59,7 +59,7 @@ export async function startCreating() {
   for (let i = startPos; i <= lastPos; i++) abstractIndexes.push(i);
   if (generalSettings.shuffleLayerConfigs)
     abstractIndexes = shuffle(abstractIndexes);
-  log(`Editions left to create: ${abstractIndexes}`);
+  logIfDebug(`Editions left to create: ${abstractIndexes}`);
   while (layerConfigIndex < layerConfigs.length) {
     const layerConfig = layerConfigs[layerConfigIndex];
     const layers = layersSetup(layerConfig.layersOrder);
@@ -69,7 +69,7 @@ export async function startCreating() {
         const results = constructLayerToDna(newDna, layers);
         const elements = results.map((res) => loadLayerImg(res));
         await Promise.all(elements).then((renderObjectArray) => {
-          log("Clearing canvas");
+          logIfDebug("Clearing canvas");
           ctx.clearRect(0, 0, format.width, format.height);
           const i = abstractIndexes[0];
           startGif(canvas, ctx, i);
@@ -79,7 +79,7 @@ export async function startCreating() {
             snapshot();
           });
           finishGif();
-          log(`Editions left to create: ${abstractIndexes}`);
+          logIfDebug(`Editions left to create: ${abstractIndexes}`);
           saveImg(canvas, i);
           addMetadata(newDna, i);
           saveMetaData(i, metadataList);

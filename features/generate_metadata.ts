@@ -4,8 +4,8 @@ import { createCanvas, loadImage } from "canvas";
 const basePath = process.cwd();
 const buildDir = `${basePath}/build/json`;
 const inputDir = `${basePath}/build/images`;
-import { format, namePrefix, description, baseUri } from "../src/config";
-import console from "console";
+import { format, generalMetaData } from "../src/config";
+
 const canvas = createCanvas(format.width, format.height);
 const ctx = canvas.getContext("2d");
 const metadataList: any[] = [];
@@ -22,7 +22,7 @@ const getImages = (_dir: any) => {
     return fs
       .readdirSync(_dir)
       .filter((item) => {
-        let extension = path.extname(`${_dir}${item}`);
+        const extension = path.extname(`${_dir}${item}`);
         if (extension == ".png" || extension == ".jpg") {
           return item;
         }
@@ -133,9 +133,9 @@ const saveMetadata = (_loadedImageObject: any) => {
   tempAttributes.push(addRarity());
 
   let tempMetadata = {
-    name: `${namePrefix} #${shortName}`,
-    description: description,
-    image: `${baseUri}/${shortName}.png`,
+    name: `${generalMetaData.namePrefix} #${shortName}`,
+    description: generalMetaData.description,
+    image: `${generalMetaData.baseUri}/${shortName}.png`,
     edition: Number(shortName),
     attributes: tempAttributes,
     compiler: "HashLips Art Engine",

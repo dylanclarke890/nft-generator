@@ -1,11 +1,11 @@
 import GifEncoder from "gif-encoder-2";
 import { writeFile } from "fs";
-import { Canvas } from "canvas";
+import { Canvas, NodeCanvasRenderingContext2D } from "canvas";
 
 export default class GifGenerator {
   gifEncoder: any;
   canvas: Canvas;
-  ctx: any;
+  ctx: NodeCanvasRenderingContext2D;
   fileName: string;
   repeat: number;
   quality: number;
@@ -13,7 +13,7 @@ export default class GifGenerator {
 
   constructor(
     _canvas: Canvas,
-    _ctx: any,
+    _ctx: NodeCanvasRenderingContext2D,
     _fileName: string,
     _repeat: number,
     _quality: number,

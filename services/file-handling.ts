@@ -2,7 +2,7 @@ import { Canvas, loadImage } from "canvas";
 import { writeFileSync } from "fs";
 import { IDNALayer } from "../interfaces/general";
 import { generalSettings } from "../src/config";
-import { log } from "./logger";
+import { logIfDebug } from "./logger";
 
 const buildDir = generalSettings.buildDirectory;
 
@@ -28,7 +28,7 @@ export function saveMetaData(_editionCount: number, metaDataList: any[]) {
   const metadata = metaDataList.find(
     (meta: any) => meta.edition == _editionCount
   );
-  log(`Writing metadata for ${_editionCount}: ${JSON.stringify(metadata)}`);
+  logIfDebug(`Writing metadata for ${_editionCount}: ${JSON.stringify(metadata)}`);
   writeFileSync(
     `${buildDir}/json/${_editionCount}.json`,
     JSON.stringify(metadata, null, 2)

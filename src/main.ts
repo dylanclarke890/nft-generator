@@ -1,10 +1,10 @@
 import NETWORK from "../constants/network";
 import {
   existsSync,
-  rmdirSync,
   mkdirSync,
   readdirSync,
   writeFileSync,
+  rmSync,
 } from "fs";
 import sha1 from "sha1";
 import { createCanvas, loadImage } from "canvas";
@@ -25,7 +25,7 @@ import {
   gif,
 } from "./config";
 import HashLipsGiffer from "../modules/HashlipsGiffer";
-import { log } from "../utils/logger";
+import { log } from "../services/logger";
 import { ILayersOrder } from "../interfaces/settings";
 
 const canvas = createCanvas(format.width, format.height);
@@ -43,7 +43,7 @@ const buildDir = `${basePath}/build`;
 const layersDir = `${basePath}/layers`;
 
 export function buildSetup() {
-  if (existsSync(buildDir)) rmdirSync(buildDir, { recursive: true });
+  if (existsSync(buildDir)) rmSync(buildDir, { recursive: true });
   mkdirSync(buildDir);
   if (gif.export) mkdirSync(`${buildDir}/gifs`);
   mkdirSync(`${buildDir}/images`);

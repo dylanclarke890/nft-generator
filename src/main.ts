@@ -5,7 +5,6 @@ import { createCanvas } from "canvas";
 import {
   background,
   format,
-  generalMetaData,
   generalSettings,
   gif,
   layerConfigs,
@@ -25,7 +24,7 @@ import {
   filterDNAOptions,
   getRarityWeight,
   isDnaUnique,
-} from "../services/metadata-helpers";
+} from "../services/dna-helpers";
 import { getRandomElement, shuffle } from "../services/randomiser";
 import { addSolanaMetaData } from "../services/solana-helper";
 import { ILayersOrder } from "../interfaces/settings";
@@ -34,11 +33,17 @@ import {
   finishGifCreation,
   startGifCreation,
 } from "../services/gif-helper";
-import { IBaseMetaData, IElement, ILayer } from "../interfaces/general";
+import {
+  IAttribute,
+  IBaseMetaData,
+  IElement,
+  ILayer,
+} from "../interfaces/general";
 import MODE from "../constants/blend_mode";
+import { addMetaData } from "../services/metadata-helper";
 
 let metadataList: IBaseMetaData[] = [];
-let attributesList: any[] = [];
+let attributesList: IAttribute[] = [];
 let dnaList = new Set();
 
 const canvas = createCanvas(format.width, format.height);
@@ -152,25 +157,14 @@ const drawBackground = () => {
 };
 
 const addMetadata = (_dna: string, _edition: number) => {
-  const dateTime = Date.now();
-  let metaData: IBaseMetaData = {
-    name: `${generalMetaData.namePrefix} #${_edition}`,
-    description: generalMetaData.description,
-    image: `${generalMetaData.baseUri}/${_edition}.png`,
-    dna: sha1(_dna),
-    edition: _edition,
-    date: dateTime,
-    ...generalSettings.extraMetadata,
-    attributes: attributesList,
-    compiler: "CK NFT Generator",
-  };
+  let metaData: IBaseMetaData = addMetaData(_dna, _edition, attributesList);
   if (network == NETWORK.sol) metaData = addSolanaMetaData(metaData, _edition);
   metadataList.push(metaData);
   attributesList = [];
 };
 
 const addAttributes = (_element: any) => {
-  let selectedElement = _element.layer.selectedElement;
+  const selectedElement = _element.layer.selectedElement;
   attributesList.push({
     trait_type: _element.layer.name,
     value: selectedElement.name,
@@ -209,9 +203,9 @@ const drawElement = (
   addAttributes(_renderObject);
 };
 
-const constructLayerToDna = (_dna = "", _layers: any = []) => {
-  let mappedDnaToLayers = _layers.map((layer: any, index: number) => {
-    let selectedElement = layer.elements.find(
+const constructLayerToDna = (_dna = "", _layers: any = []) =>
+  _layers.map((layer: any, index: number) => {
+    const selectedElement = layer.elements.find(
       (e: any) =>
         e.id == cleanDna(_dna.split(generalSettings.dnaDelimiter)[index])
     );
@@ -219,11 +213,9 @@ const constructLayerToDna = (_dna = "", _layers: any = []) => {
       name: layer.name,
       blend: layer.blend,
       opacity: layer.opacity,
-      selectedElement: selectedElement,
+      selectedElement,
     };
   });
-  return mappedDnaToLayers;
-};
 
 const createDna = (_layers: any[]) => {
   let randNum: string[] = [];

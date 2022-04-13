@@ -17,6 +17,11 @@ export interface IElement {
   weight: number;
 }
 
+export interface IAttribute {
+  trait_type: string;
+  value: string;
+}
+
 export interface IBaseMetaData {
   attributes: any[];
   description: string;
@@ -27,7 +32,7 @@ export interface IBaseMetaData {
 
 export interface IMetaData extends IBaseMetaData {
   dna: string;
-  date: Date;
+  date: number;
   compiler: string;
   [key: string]: any;
 }

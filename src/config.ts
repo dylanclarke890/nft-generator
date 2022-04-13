@@ -47,7 +47,7 @@ const solanaMetadata: ISolanaData = {
 };
 
 // If network type = "sol" is selected count starts at 0.
-const layerConfigurations: ILayerConfig[] = [
+const layerConfigs: ILayerConfig[] = [
   {
     growEditionSizeTo: 5,
     layersOrder: [
@@ -117,7 +117,7 @@ export {
   generalMetaData,
   background,
   generalSettings,
-  layerConfigurations as layerConfigs,
+  layerConfigs,
   preview,
   pixelFormat,
   text,

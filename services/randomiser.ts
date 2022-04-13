@@ -18,6 +18,10 @@ export function genColor() {
     return `hsl(${Math.floor(Math.random() * 360)}, 100%, ${background.brightness})`;
 }
 
+export function randomIntFromInterval(min: number, max: number) {
+  return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
 export function getRandomElement(
   layer: any,
   totalWeight: number,

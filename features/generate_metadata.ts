@@ -1,10 +1,18 @@
 import fs from "fs";
 import path from "path";
 import { createCanvas, loadImage } from "canvas";
-const basePath = process.cwd();
-const buildDir = `${basePath}/build/json`;
-const inputDir = `${basePath}/build/images`;
-import { format, generalMetaData } from "../src/config";
+import { format, generalMetaData, generalSettings } from "../src/config";
+import { randomIntFromInterval } from "../services/randomiser";
+import {
+  IColor,
+  IImage,
+  IImageData,
+  IRareColor,
+} from "../interfaces/generate-metadata";
+import { IAttribute } from "../interfaces/general";
+
+const buildDir = `${generalSettings.buildDirectory}/json`;
+const inputDir = `${generalSettings.buildDirectory}/images`;
 
 const canvas = createCanvas(format.width, format.height);
 const ctx = canvas.getContext("2d");
@@ -17,7 +25,7 @@ const buildSetup = () => {
   fs.mkdirSync(buildDir);
 };
 
-const getImages = (_dir: any) => {
+const getImages = (_dir: string): IImage[] | null => {
   try {
     return fs
       .readdirSync(_dir)
@@ -27,74 +35,59 @@ const getImages = (_dir: any) => {
           return item;
         }
       })
-      .map((i) => {
-        return {
-          filename: i,
-          path: `${_dir}/${i}`,
-        };
-      });
+      .map((i) => ({
+        filename: i,
+        path: `${_dir}/${i}`,
+      }));
   } catch {
     return null;
   }
 };
 
-const loadImgData = async (_imgObject: any) => {
+const loadImgData = async (imgObject: IImage) => {
   try {
-    const image = await loadImage(`${_imgObject.path}`);
-    return {
-      imgObject: _imgObject,
-      loadedImage: image,
-    };
+    const loadedImage = await loadImage(`${imgObject.path}`);
+    return { imgObject, loadedImage };
   } catch (error) {
     console.error("Error loading image:", error);
+    process.exit();
   }
 };
 
-const draw = (_imgObject: any) => {
-  let w = canvas.width;
-  let h = canvas.height;
-  ctx.drawImage(_imgObject.loadedImage, 0, 0, w, h);
-};
+const draw = (_imgObject: IImageData) =>
+  ctx.drawImage(_imgObject.loadedImage, 0, 0, canvas.width, canvas.height);
 
-const addRarity = () => {
-  let w = canvas.width;
-  let h = canvas.height;
-  let i = -4;
-  let count = 0;
-  let imgdata = ctx.getImageData(0, 0, w, h);
-  let rgb = imgdata.data;
-  let newRgb = { r: 0, g: 0, b: 0 };
+const addRarity = (): IAttribute[] => {
   const tolerance = 15;
   const rareColorBase = "NOT a Hot Dog";
-  const rareColor = [
+  const rareColor: IRareColor[] = [
     { name: "Hot Dog", rgb: { r: 192, g: 158, b: 131 } },
     { name: "Hot Dog", rgb: { r: 128, g: 134, b: 90 } },
     { name: "Hot Dog", rgb: { r: 113, g: 65, b: 179 } },
     { name: "Hot Dog", rgb: { r: 162, g: 108, b: 67 } },
   ];
 
-  while ((i += 10 * 4) < rgb.length) {
+  let i = -4;
+  let count = 0;
+  const rgbData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+  const newRgb: IColor = { r: 0, g: 0, b: 0 };
+  while ((i += 10 * 4) < rgbData.length) {
     ++count;
-    newRgb.r += rgb[i];
-    newRgb.g += rgb[i + 1];
-    newRgb.b += rgb[i + 2];
+    newRgb.r += rgbData[i];
+    newRgb.g += rgbData[i + 1];
+    newRgb.b += rgbData[i + 2];
   }
-
   newRgb.r = ~~(newRgb.r / count);
   newRgb.g = ~~(newRgb.g / count);
   newRgb.b = ~~(newRgb.b / count);
 
   let rarity = rareColorBase;
-
   rareColor.forEach((color) => {
     if (isNeighborColor(newRgb, color.rgb, tolerance)) {
       rarity = color.name;
     }
   });
-
-  console.log(newRgb);
-  console.log(rarity);
-
+  console.log(rarity, newRgb);
   return [
     {
       trait_type: "average color",
@@ -106,39 +99,29 @@ const addRarity = () => {
     },
     {
       trait_type: "date",
-      value: randomIntFromInterval(1500, 1900),
+      value: randomIntFromInterval(1500, 1900).toString(),
     },
   ];
 };
 
-const randomIntFromInterval = (min: number, max: number) => {
-  return Math.floor(Math.random() * (max - min + 1) + min);
-};
+const isNeighborColor = (color1: IColor, color2: IColor, tolerance: number) =>
+  Math.abs(color1.r - color2.r) <= tolerance &&
+  Math.abs(color1.g - color2.g) <= tolerance &&
+  Math.abs(color1.b - color2.b) <= tolerance;
 
-const isNeighborColor = (color1: any, color2: any, tolerance: any) => {
-  return (
-    Math.abs(color1.r - color2.r) <= tolerance &&
-    Math.abs(color1.g - color2.g) <= tolerance &&
-    Math.abs(color1.b - color2.b) <= tolerance
-  );
-};
-
-const saveMetadata = (_loadedImageObject: any) => {
-  let shortName = _loadedImageObject.imgObject.filename.replace(
+const saveMetadata = (_loadedImageObject: IImageData) => {
+  const shortName = _loadedImageObject.imgObject.filename.replace(
     /\.[^/.]+$/,
     ""
   );
-
-  let tempAttributes = [];
-  tempAttributes.push(addRarity());
-
-  let tempMetadata = {
+  const attributes = addRarity();
+  const tempMetadata = {
     name: `${generalMetaData.namePrefix} #${shortName}`,
     description: generalMetaData.description,
     image: `${generalMetaData.baseUri}/${shortName}.png`,
     edition: Number(shortName),
-    attributes: tempAttributes,
-    compiler: "HashLips Art Engine",
+    attributes,
+    compiler: "CK NFT Generator",
   };
   fs.writeFileSync(
     `${buildDir}/${shortName}.json`,
@@ -147,27 +130,25 @@ const saveMetadata = (_loadedImageObject: any) => {
   metadataList.push(tempMetadata);
 };
 
-const writeMetaData = (_data: any) => {
+const writeMetaData = (_data: string) => {
   fs.writeFileSync(`${buildDir}/_metadata.json`, _data);
 };
 
 const startCreating = async () => {
   const images = getImages(inputDir);
   if (images == null) {
-    console.log("Please generate collection first.");
-    return;
+    console.error("Please generate collection first.");
+    process.exit();
   }
-  let loadedImageObjects: any[] = [];
+  const loadedImageObjects: Promise<IImageData>[] = [];
   images.forEach((imgObject) => {
     loadedImageObjects.push(loadImgData(imgObject));
   });
   await Promise.all(loadedImageObjects).then((loadedImageObjectArray) => {
-    loadedImageObjectArray.forEach((loadedImageObject) => {
-      draw(loadedImageObject);
-      saveMetadata(loadedImageObject);
-      console.log(
-        `Created metadata for image: ${loadedImageObject.imgObject.filename}`
-      );
+    loadedImageObjectArray.forEach((loaded) => {
+      draw(loaded);
+      saveMetadata(loaded);
+      console.log(`Created metadata for image: ${loaded.imgObject.filename}`);
     });
   });
   writeMetaData(JSON.stringify(metadataList, null, 2));

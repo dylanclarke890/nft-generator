@@ -32,9 +32,9 @@ const generalMetaData: IGeneralMetaData = {
   baseUri: "ipfs://NewUriToReplace",
   description: "My first description for my first collection",
   namePrefix: "My First Collection",
+  network: NETWORK.eth,
 };
 
-const network: NETWORK = NETWORK.eth;
 const solanaMetadata: ISolanaData = {
   symbol: "YC",
   seller_fee_basis_points: 1000, // Define how much % you want from secondary market sales 1000 = 10%
@@ -135,7 +135,6 @@ export {
   pixelFormat,
   preview,
   preview_gif,
-  network,
   solanaMetadata,
   text,
 };

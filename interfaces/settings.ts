@@ -1,4 +1,5 @@
 import MODE from "../constants/blend_mode";
+import NETWORK from "../constants/network";
 import { IRareColor } from "./generate-metadata";
 
 export interface IBackgroundSettings {
@@ -18,6 +19,7 @@ export interface IGeneralMetaData {
   baseUri: string;
   description: string;
   namePrefix: string;
+  network: NETWORK;
 }
 
 export interface IGeneralSettings {

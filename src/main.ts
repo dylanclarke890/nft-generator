@@ -2,7 +2,13 @@ import NETWORK from "../constants/network";
 import { existsSync, mkdirSync, readdirSync, rmSync } from "fs";
 import sha1 from "sha1";
 import { createCanvas } from "canvas";
-import { format, generalSettings, gif, layerConfigs, network } from "./config";
+import {
+  format,
+  generalMetaData,
+  generalSettings,
+  gif,
+  layerConfigs,
+} from "./config";
 import { logIfDebug } from "../services/logger";
 import {
   loadLayerImg,
@@ -54,7 +60,7 @@ export async function startCreating() {
   let editionCount = 1;
   let failedCount = 0;
   let abstractIndexes: number[] = [];
-  const startPos = network == NETWORK.sol ? 0 : 1;
+  const startPos = generalMetaData.network == NETWORK.sol ? 0 : 1;
   const lastPos = layerConfigs[layerConfigs.length - 1].growEditionSizeTo;
   for (let i = startPos; i <= lastPos; i++) abstractIndexes.push(i);
   if (generalSettings.shuffleLayerConfigs)
@@ -134,7 +140,8 @@ const layersSetup = (layersOrder: ILayersOrder[]): ILayer[] =>
 
 const addMetadata = (_dna: string, _edition: number) => {
   let metaData: IBaseMetaData = addMetaData(_dna, _edition, attributesList);
-  if (network == NETWORK.sol) metaData = addSolanaMetaData(metaData, _edition);
+  if (generalMetaData.network == NETWORK.sol)
+    metaData = addSolanaMetaData(metaData, _edition);
   metadataList.push(metaData);
   attributesList = [];
 };

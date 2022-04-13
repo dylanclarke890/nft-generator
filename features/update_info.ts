@@ -1,20 +1,15 @@
 import NETWORK from "../constants/network";
 import fs from "fs";
 const basePath = process.cwd();
-import {
-  baseUri,
-  description,
-  namePrefix,
-  network,
-  solanaMetadata,
-} from "../src/config";
+import { generalMetaData, solanaMetadata } from "../src/config";
 
+const { baseUri, namePrefix, description, network } = generalMetaData;
 // read json data
 let rawdata: any = fs.readFileSync(`${basePath}/build/json/_metadata.json`);
 let data = JSON.parse(rawdata);
 
 data.forEach((item: any) => {
-  if (network == NETWORK.sol) {
+  if (generalMetaData.network == NETWORK.sol) {
     item.name = `${namePrefix} #${item.edition}`;
     item.description = description;
     item.creators = solanaMetadata.creators;

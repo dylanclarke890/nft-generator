@@ -16,7 +16,13 @@ import {
 import HashLipsGiffer from "../modules/HashlipsGiffer";
 import { log } from "../services/logger";
 import { ILayersOrder } from "../interfaces/settings";
-import { loadLayerImg, saveImage, saveMetaDataSingleFile, writeMetaData } from "../services/file-handling";
+import {
+  loadLayerImg,
+  saveImage,
+  saveMetaDataSingleFile,
+  writeMetaData,
+} from "../services/file-handling";
+import { cleanLayerName, getRarityWeight } from "../services/metadata-helpers";
 
 const canvas = createCanvas(format.width, format.height);
 const ctx: any = canvas.getContext("2d");
@@ -145,29 +151,10 @@ export function getElements(path: string) {
     });
 }
 
-const getRarityWeight = (_str: string) => {
-  const nameWithoutExtension = _str.slice(0, -4);
-  let nameWithoutWeight = Number(
-    nameWithoutExtension.split(generalSettings.rarityDelimiter).pop()
-  );
-  if (isNaN(nameWithoutWeight)) {
-    nameWithoutWeight = 1;
-  }
-  return nameWithoutWeight;
-};
-
 const cleanDna = (_str: string) => {
   const withoutOptions = removeQueryStrings(_str);
   var dna = Number(withoutOptions.split(":").shift());
   return dna;
-};
-
-const cleanLayerName = (_str: string) => {
-  const nameWithoutExtension = _str.slice(0, -4);
-  const nameWithoutWeight = nameWithoutExtension
-    .split(generalSettings.rarityDelimiter)
-    .shift();
-  return nameWithoutWeight;
 };
 
 const layersSetup = (layersOrder: ILayersOrder[]) => {
@@ -176,22 +163,10 @@ const layersSetup = (layersOrder: ILayersOrder[]) => {
     elements: getElements(
       `${generalSettings.layersDirectory}/${layerObj.name}/`
     ),
-    name:
-      layerObj.options?.["displayName"] !== undefined
-        ? layerObj.options["displayName"]
-        : layerObj.name,
-    blend:
-      layerObj.options?.["blend"] !== undefined
-        ? layerObj.options?.["blend"]
-        : "source-over",
-    opacity:
-      layerObj.options?.["opacity"] !== undefined
-        ? layerObj.options?.["opacity"]
-        : 1,
-    bypassDNA:
-      layerObj.options?.["bypassDNA"] !== undefined
-        ? layerObj.options?.["bypassDNA"]
-        : false,
+    name: layerObj.options?.["displayName"] ?? layerObj.name,
+    blend: layerObj.options?.["blend"] ?? "source-over",
+    opacity: layerObj.options?.["opacity"] ?? 1,
+    bypassDNA: layerObj.options?.["bypassDNA"] ?? false,
   }));
   return layers;
 };

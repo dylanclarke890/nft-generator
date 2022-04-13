@@ -22,7 +22,14 @@ import {
   saveMetaDataSingleFile,
   writeMetaData,
 } from "../services/file-handling";
-import { cleanDna, cleanLayerName, filterDNAOptions, getRarityWeight, isDnaUnique } from "../services/metadata-helpers";
+import {
+  cleanDna,
+  cleanLayerName,
+  filterDNAOptions,
+  getRarityWeight,
+  isDnaUnique,
+} from "../services/metadata-helpers";
+import { getRandomElement, shuffle } from "../services/randomiser";
 
 const canvas = createCanvas(format.width, format.height);
 const ctx: any = canvas.getContext("2d");
@@ -146,7 +153,7 @@ export function getElements(layerFolderName: string) {
         id: index,
         name: cleanLayerName(i),
         filename: i,
-        path: `${path}${i}`,
+        path: `${path}/${i}`,
         weight: getRarityWeight(i),
       };
     });
@@ -257,7 +264,7 @@ const drawElement = (
 };
 
 const constructLayerToDna = (_dna = "", _layers: any = []) => {
-  let mappedDnaToLayers = _layers.map((layer: any, index: any) => {
+  let mappedDnaToLayers = _layers.map((layer: any, index: number) => {
     let selectedElement = layer.elements.find(
       (e: any) =>
         e.id == cleanDna(_dna.split(generalSettings.dnaDelimiter)[index])
@@ -272,40 +279,14 @@ const constructLayerToDna = (_dna = "", _layers: any = []) => {
   return mappedDnaToLayers;
 };
 
-const createDna = (_layers: any) => {
-  let randNum: any = [];
+const createDna = (_layers: any[]) => {
+  let randNum: string[] = [];
   _layers.forEach((layer: any) => {
-    var totalWeight = 0;
+    let totalWeight = 0;
     layer.elements.forEach((element: any) => {
       totalWeight += element.weight;
     });
-    // number between 0 - totalWeight
-    let random = Math.floor(Math.random() * totalWeight);
-    for (var i = 0; i < layer.elements.length; i++) {
-      // subtract the current weight from the random weight until we reach a sub zero value.
-      random -= layer.elements[i].weight;
-      if (random < 0) {
-        return randNum.push(
-          `${layer.elements[i].id}:${layer.elements[i].filename}${
-            layer.bypassDNA ? "?bypassDNA=true" : ""
-          }`
-        );
-      }
-    }
+    getRandomElement(layer, totalWeight, randNum);
   });
   return randNum.join(generalSettings.dnaDelimiter);
 };
-
-function shuffle(array: any[]) {
-  let currentIndex = array.length,
-    randomIndex: number;
-  while (currentIndex != 0) {
-    randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex--;
-    [array[currentIndex], array[randomIndex]] = [
-      array[randomIndex],
-      array[currentIndex],
-    ];
-  }
-  return array;
-}

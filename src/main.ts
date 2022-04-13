@@ -17,7 +17,6 @@ import {
   layerConfigurations,
   rarityDelimiter,
   shuffleLayerConfigurations,
-  debugLogs,
   extraMetadata,
   text,
   namePrefix,
@@ -26,10 +25,9 @@ import {
   gif,
 } from "./config";
 import HashLipsGiffer from "../modules/HashlipsGiffer";
+import { log } from "../utils/logger";
+import { ILayersOrder } from "../interfaces/settings";
 
-const basePath = process.cwd();
-const buildDir = `${basePath}/build`;
-const layersDir = `${basePath}/layers`;
 const canvas = createCanvas(format.width, format.height);
 const ctx: any = canvas.getContext("2d");
 ctx.imageSmoothingEnabled = format.smoothing;
@@ -40,21 +38,38 @@ const DNA_DELIMITER = "-";
 
 let hashlipsGiffer: any = null;
 
-const buildSetup = () => {
-  if (existsSync(buildDir)) {
-    rmdirSync(buildDir, { recursive: true });
-  }
+const basePath = process.cwd();
+const buildDir = `${basePath}/build`;
+const layersDir = `${basePath}/layers`;
+
+export function buildSetup() {
+  if (existsSync(buildDir)) rmdirSync(buildDir, { recursive: true });
   mkdirSync(buildDir);
-  mkdirSync(`${buildDir}/json`);
+  if (gif.export) mkdirSync(`${buildDir}/gifs`);
   mkdirSync(`${buildDir}/images`);
-  if (gif.export) {
-    mkdirSync(`${buildDir}/gifs`);
-  }
-};
+  mkdirSync(`${buildDir}/json`);
+}
+
+export function getElements(path: string) {
+  return readdirSync(path)
+    .filter((item) => !/(^|\/)\.[^\/\.]/g.test(item))
+    .map((i, index) => {
+      if (i.includes(DNA_DELIMITER)) {
+        throw new Error(`layer name can not contain dashes, please fix: ${i}`);
+      }
+      return {
+        id: index,
+        name: cleanLayerName(i),
+        filename: i,
+        path: `${path}${i}`,
+        weight: getRarityWeight(i),
+      };
+    });
+}
 
 const getRarityWeight = (_str: string) => {
-  let nameWithoutExtension = _str.slice(0, -4);
-  var nameWithoutWeight = Number(
+  const nameWithoutExtension = _str.slice(0, -4);
+  let nameWithoutWeight = Number(
     nameWithoutExtension.split(rarityDelimiter).pop()
   );
   if (isNaN(nameWithoutWeight)) {
@@ -69,43 +84,26 @@ const cleanDna = (_str: string) => {
   return dna;
 };
 
-const cleanName = (_str: string) => {
-  let nameWithoutExtension = _str.slice(0, -4);
-  var nameWithoutWeight = nameWithoutExtension.split(rarityDelimiter).shift();
+const cleanLayerName = (_str: string) => {
+  const nameWithoutExtension = _str.slice(0, -4);
+  const nameWithoutWeight = nameWithoutExtension.split(rarityDelimiter).shift();
   return nameWithoutWeight;
 };
 
-const getElements = (path: any) => {
-  return readdirSync(path)
-    .filter((item) => !/(^|\/)\.[^\/\.]/g.test(item))
-    .map((i, index) => {
-      if (i.includes("-")) {
-        throw new Error(`layer name can not contain dashes, please fix: ${i}`);
-      }
-      return {
-        id: index,
-        name: cleanName(i),
-        filename: i,
-        path: `${path}${i}`,
-        weight: getRarityWeight(i),
-      };
-    });
-};
-
-const layersSetup = (layersOrder: any) => {
-  const layers = layersOrder.map((layerObj: any, index: number) => ({
+const layersSetup = (layersOrder: ILayersOrder[]) => {
+  const layers = layersOrder.map((layerObj, index) => ({
     id: index,
     elements: getElements(`${layersDir}/${layerObj.name}/`),
     name:
-      layerObj.options?.["displayName"] != undefined
-        ? layerObj.options?.["displayName"]
+      layerObj.options?.["displayName"] !== undefined
+        ? layerObj.options["displayName"]
         : layerObj.name,
     blend:
-      layerObj.options?.["blend"] != undefined
+      layerObj.options?.["blend"] !== undefined
         ? layerObj.options?.["blend"]
         : "source-over",
     opacity:
-      layerObj.options?.["opacity"] != undefined
+      layerObj.options?.["opacity"] !== undefined
         ? layerObj.options?.["opacity"]
         : 1,
     bypassDNA:
@@ -116,7 +114,7 @@ const layersSetup = (layersOrder: any) => {
   return layers;
 };
 
-const saveImage = (_editionCount: any) => {
+const saveImage = (_editionCount: number) => {
   writeFileSync(
     `${buildDir}/images/${_editionCount}.png`,
     canvas.toBuffer("image/png")
@@ -145,7 +143,7 @@ const addMetadata = (_dna: string, _edition: number) => {
     date: dateTime,
     ...extraMetadata,
     attributes: attributesList,
-    compiler: "HashLips Art Engine",
+    compiler: "CK NFT Generator",
   };
   if (network == NETWORK.sol) {
     tempMetadata = {
@@ -313,13 +311,9 @@ const writeMetaData = (_data: any) => {
   writeFileSync(`${buildDir}/json/_metadata.json`, _data);
 };
 
-const saveMetaDataSingleFile = (_editionCount: any) => {
+const saveMetaDataSingleFile = (_editionCount: number) => {
   let metadata = metadataList.find((meta) => meta.edition == _editionCount);
-  debugLogs
-    ? console.log(
-        `Writing metadata for ${_editionCount}: ${JSON.stringify(metadata)}`
-      )
-    : null;
+  log(`Writing metadata for ${_editionCount}: ${JSON.stringify(metadata)}`);
   writeFileSync(
     `${buildDir}/json/${_editionCount}.json`,
     JSON.stringify(metadata, null, 2)
@@ -345,8 +339,9 @@ const startCreating = async () => {
   let editionCount = 1;
   let failedCount = 0;
   let abstractedIndexes: number[] = [];
+  let startPos = network == NETWORK.sol ? 0 : 1;
   for (
-    let i = network == NETWORK.sol ? 0 : 1;
+    let i = startPos;
     i <= layerConfigurations[layerConfigurations.length - 1].growEditionSizeTo;
     i++
   ) {
@@ -355,9 +350,7 @@ const startCreating = async () => {
   if (shuffleLayerConfigurations) {
     abstractedIndexes = shuffle(abstractedIndexes);
   }
-  debugLogs
-    ? console.log("Editions left to create: ", abstractedIndexes)
-    : null;
+  log(`Editions left to create: ${abstractedIndexes}`);
   while (layerConfigIndex < layerConfigurations.length) {
     const layers = layersSetup(
       layerConfigurations[layerConfigIndex].layersOrder
@@ -375,7 +368,7 @@ const startCreating = async () => {
         });
 
         await Promise.all(loadedElements).then((renderObjectArray) => {
-          debugLogs ? console.log("Clearing canvas") : null;
+          log("Clearing canvas");
           ctx.clearRect(0, 0, format.width, format.height);
           if (gif.export) {
             hashlipsGiffer = new HashLipsGiffer(
@@ -404,9 +397,7 @@ const startCreating = async () => {
           if (gif.export) {
             hashlipsGiffer.stop();
           }
-          debugLogs
-            ? console.log("Editions left to create: ", abstractedIndexes)
-            : null;
+          log(`Editions left to create: ${abstractedIndexes}`);
           saveImage(abstractedIndexes[0]);
           addMetadata(newDna, abstractedIndexes[0]);
           saveMetaDataSingleFile(abstractedIndexes[0]);
@@ -435,4 +426,4 @@ const startCreating = async () => {
   writeMetaData(JSON.stringify(metadataList, null, 2));
 };
 
-export { startCreating, buildSetup, getElements };
+export { startCreating };

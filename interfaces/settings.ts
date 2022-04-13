@@ -19,8 +19,9 @@ export interface ILayersOrder {
 
 export interface ILayersOptions {
   blend?: MODE;
-  opacity?: string;
+  bypassDNA?: boolean;
   displayName?: string;
+  opacity?: string;
 }
 
 export interface IFormatSettings {

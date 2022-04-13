@@ -22,7 +22,7 @@ const namePrefix = "My First Collection";
 const description = "My first description for my first collection";
 const baseUri = "ipfs://NewUriToReplace";
 
-const network = NETWORK.eth;
+const network: NETWORK = NETWORK.eth;
 const solanaMetadata: ISolanaData = {
   symbol: "YC",
   seller_fee_basis_points: 1000, // Define how much % you want from secondary market sales 1000 = 10%

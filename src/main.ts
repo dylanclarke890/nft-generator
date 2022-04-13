@@ -1,32 +1,22 @@
 import NETWORK from "../constants/network";
-import {
-  existsSync,
-  mkdirSync,
-  readdirSync,
-  writeFileSync,
-  rmSync,
-} from "fs";
+import { existsSync, mkdirSync, readdirSync, writeFileSync, rmSync } from "fs";
 import sha1 from "sha1";
-import { createCanvas, loadImage } from "canvas";
+import { createCanvas } from "canvas";
 import {
-  format,
-  baseUri,
-  description,
   background,
-  uniqueDnaTorrance,
+  format,
+  generalMetaData,
+  generalSettings,
+  gif,
   layerConfigurations,
-  rarityDelimiter,
-  shuffleLayerConfigurations,
-  extraMetadata,
-  text,
-  namePrefix,
   network,
   solanaMetadata,
-  gif,
+  text,
 } from "./config";
 import HashLipsGiffer from "../modules/HashlipsGiffer";
 import { log } from "../services/logger";
 import { ILayersOrder } from "../interfaces/settings";
+import { loadLayerImg, saveImage, saveMetaDataSingleFile, writeMetaData } from "../services/file-handling";
 
 const canvas = createCanvas(format.width, format.height);
 const ctx: any = canvas.getContext("2d");
@@ -34,15 +24,11 @@ ctx.imageSmoothingEnabled = format.smoothing;
 var metadataList: any[] = [];
 var attributesList: any[] = [];
 var dnaList = new Set();
-const DNA_DELIMITER = "-";
 
 let hashlipsGiffer: any = null;
 
-const basePath = process.cwd();
-const buildDir = `${basePath}/build`;
-const layersDir = `${basePath}/layers`;
-
 export function buildSetup() {
+  const buildDir = generalSettings.buildDirectory;
   if (existsSync(buildDir)) rmSync(buildDir, { recursive: true });
   mkdirSync(buildDir);
   if (gif.export) mkdirSync(`${buildDir}/gifs`);
@@ -50,11 +36,103 @@ export function buildSetup() {
   mkdirSync(`${buildDir}/json`);
 }
 
+export async function startCreating() {
+  let layerConfigIndex = 0;
+  let editionCount = 1;
+  let failedCount = 0;
+  let abstractedIndexes: number[] = [];
+  let startPos = network == NETWORK.sol ? 0 : 1;
+  for (
+    let i = startPos;
+    i <= layerConfigurations[layerConfigurations.length - 1].growEditionSizeTo;
+    i++
+  ) {
+    abstractedIndexes.push(i);
+  }
+  if (generalSettings.shuffleLayerConfigurations) {
+    abstractedIndexes = shuffle(abstractedIndexes);
+  }
+  log(`Editions left to create: ${abstractedIndexes}`);
+  while (layerConfigIndex < layerConfigurations.length) {
+    const layers = layersSetup(
+      layerConfigurations[layerConfigIndex].layersOrder
+    );
+    while (
+      editionCount <= layerConfigurations[layerConfigIndex].growEditionSizeTo
+    ) {
+      let newDna = createDna(layers);
+      if (isDnaUnique(dnaList, newDna)) {
+        let results = constructLayerToDna(newDna, layers);
+        let loadedElements: any = [];
+
+        results.forEach((layer: any) => {
+          loadedElements.push(loadLayerImg(layer));
+        });
+
+        await Promise.all(loadedElements).then((renderObjectArray) => {
+          log("Clearing canvas");
+          ctx.clearRect(0, 0, format.width, format.height);
+          if (gif.export) {
+            hashlipsGiffer = new HashLipsGiffer(
+              canvas,
+              ctx,
+              `${generalSettings.buildDirectory}/gifs/${abstractedIndexes[0]}.gif`,
+              gif.repeat,
+              gif.quality,
+              gif.delay
+            );
+            hashlipsGiffer.start();
+          }
+          if (background.generate) {
+            drawBackground();
+          }
+          renderObjectArray.forEach((renderObject, index) => {
+            drawElement(
+              renderObject,
+              index,
+              layerConfigurations[layerConfigIndex].layersOrder.length
+            );
+            if (gif.export) {
+              hashlipsGiffer.add();
+            }
+          });
+          if (gif.export) {
+            hashlipsGiffer.stop();
+          }
+          log(`Editions left to create: ${abstractedIndexes}`);
+          saveImage(canvas, abstractedIndexes[0]);
+          addMetadata(newDna, abstractedIndexes[0]);
+          saveMetaDataSingleFile(abstractedIndexes[0], metadataList);
+          console.log(
+            `Created edition: ${abstractedIndexes[0]}, with DNA: ${sha1(
+              newDna
+            )}`
+          );
+        });
+        dnaList.add(filterDNAOptions(newDna));
+        editionCount++;
+        abstractedIndexes.shift();
+      } else {
+        console.log("DNA exists!");
+        failedCount++;
+        if (failedCount >= generalSettings.uniqueDnaTolerance) {
+          console.log(
+            `You need more layers or elements to grow your edition to ${layerConfigurations[layerConfigIndex].growEditionSizeTo} artworks!`
+          );
+          process.exit();
+        }
+      }
+    }
+    layerConfigIndex++;
+  }
+  writeMetaData(JSON.stringify(metadataList, null, 2));
+}
+
 export function getElements(path: string) {
   return readdirSync(path)
     .filter((item) => !/(^|\/)\.[^\/\.]/g.test(item))
     .map((i, index) => {
-      if (i.includes(DNA_DELIMITER)) {
+      if (i.includes(generalSettings.dnaDelimiter)) {
         throw new Error(`layer name can not contain dashes, please fix: ${i}`);
       }
       return {
@@ -70,7 +148,7 @@ export function getElements(path: string) {
 const getRarityWeight = (_str: string) => {
   const nameWithoutExtension = _str.slice(0, -4);
   let nameWithoutWeight = Number(
-    nameWithoutExtension.split(rarityDelimiter).pop()
+    nameWithoutExtension.split(generalSettings.rarityDelimiter).pop()
   );
   if (isNaN(nameWithoutWeight)) {
     nameWithoutWeight = 1;
@@ -86,14 +164,18 @@ const cleanDna = (_str: string) => {
 
 const cleanLayerName = (_str: string) => {
   const nameWithoutExtension = _str.slice(0, -4);
-  const nameWithoutWeight = nameWithoutExtension.split(rarityDelimiter).shift();
+  const nameWithoutWeight = nameWithoutExtension
+    .split(generalSettings.rarityDelimiter)
+    .shift();
   return nameWithoutWeight;
 };
 
 const layersSetup = (layersOrder: ILayersOrder[]) => {
   const layers = layersOrder.map((layerObj, index) => ({
     id: index,
-    elements: getElements(`${layersDir}/${layerObj.name}/`),
+    elements: getElements(
+      `${generalSettings.layersDirectory}/${layerObj.name}/`
+    ),
     name:
       layerObj.options?.["displayName"] !== undefined
         ? layerObj.options["displayName"]
@@ -114,13 +196,6 @@ const layersSetup = (layersOrder: ILayersOrder[]) => {
   return layers;
 };
 
-const saveImage = (_editionCount: number) => {
-  writeFileSync(
-    `${buildDir}/images/${_editionCount}.png`,
-    canvas.toBuffer("image/png")
-  );
-};
-
 const genColor = () => {
   let hue = Math.floor(Math.random() * 360);
   let pastel = `hsl(${hue}, 100%, ${background.brightness})`;
@@ -135,13 +210,13 @@ const drawBackground = () => {
 const addMetadata = (_dna: string, _edition: number) => {
   let dateTime = Date.now();
   let tempMetadata: any = {
-    name: `${namePrefix} #${_edition}`,
-    description: description,
-    image: `${baseUri}/${_edition}.png`,
+    name: `${generalMetaData.namePrefix} #${_edition}`,
+    description: generalMetaData.description,
+    image: `${generalMetaData.baseUri}/${_edition}.png`,
     dna: sha1(_dna),
     edition: _edition,
     date: dateTime,
-    ...extraMetadata,
+    ...generalSettings.extraMetadata,
     attributes: attributesList,
     compiler: "CK NFT Generator",
   };
@@ -157,7 +232,7 @@ const addMetadata = (_dna: string, _edition: number) => {
       //Added metadata for solana
       external_url: solanaMetadata.external_url,
       edition: _edition,
-      ...extraMetadata,
+      ...generalSettings.extraMetadata,
       attributes: tempMetadata.attributes,
       properties: {
         files: [
@@ -183,34 +258,26 @@ const addAttributes = (_element: any) => {
   });
 };
 
-const loadLayerImg = async (_layer: any) => {
-  try {
-    return new Promise(async (resolve) => {
-      const image = await loadImage(`${_layer.selectedElement.path}`);
-      resolve({ layer: _layer, loadedImage: image });
-    });
-  } catch (error) {
-    console.error("Error loading image:", error);
-  }
-};
-
-const addText = (_sig: any, x: any, y: any, size: any) => {
+const addText = (_sig: string, x: number, y: number) => {
   ctx.fillStyle = text.color;
-  ctx.font = `${text.weight} ${size}pt ${text.family}`;
+  ctx.font = `${text.weight} ${text.size}pt ${text.family}`;
   ctx.textBaseline = text.baseline;
   ctx.textAlign = text.align;
   ctx.fillText(_sig, x, y);
 };
 
-const drawElement = (_renderObject: any, _index: any, _layersLen: any) => {
+const drawElement = (
+  _renderObject: any,
+  _index: number,
+  _layersLen: number
+) => {
   ctx.globalAlpha = _renderObject.layer.opacity;
   ctx.globalCompositeOperation = _renderObject.layer.blend;
   text.only
     ? addText(
         `${_renderObject.layer.name}${text.spacer}${_renderObject.layer.selectedElement.name}`,
         text.xGap,
-        text.yGap * (_index + 1),
-        text.size
+        text.yGap * (_index + 1)
       )
     : ctx.drawImage(
         _renderObject.loadedImage,
@@ -226,7 +293,8 @@ const drawElement = (_renderObject: any, _index: any, _layersLen: any) => {
 const constructLayerToDna = (_dna = "", _layers: any = []) => {
   let mappedDnaToLayers = _layers.map((layer: any, index: any) => {
     let selectedElement = layer.elements.find(
-      (e: any) => e.id == cleanDna(_dna.split(DNA_DELIMITER)[index])
+      (e: any) =>
+        e.id == cleanDna(_dna.split(generalSettings.dnaDelimiter)[index])
     );
     return {
       name: layer.name,
@@ -247,7 +315,7 @@ const constructLayerToDna = (_dna = "", _layers: any = []) => {
  * @returns new DNA string with any items that should be filtered, removed.
  */
 const filterDNAOptions = (_dna: string) => {
-  const dnaItems = _dna.split(DNA_DELIMITER);
+  const dnaItems = _dna.split(generalSettings.dnaDelimiter);
   const filteredDNA = dnaItems.filter((element: any) => {
     const query = /(\?.*$)/;
     const querystring = query.exec(element);
@@ -262,7 +330,7 @@ const filterDNAOptions = (_dna: string) => {
     return options.bypassDNA;
   });
 
-  return filteredDNA.join(DNA_DELIMITER);
+  return filteredDNA.join(generalSettings.dnaDelimiter);
 };
 
 /**
@@ -304,20 +372,7 @@ const createDna = (_layers: any) => {
       }
     }
   });
-  return randNum.join(DNA_DELIMITER);
-};
-
-const writeMetaData = (_data: any) => {
-  writeFileSync(`${buildDir}/json/_metadata.json`, _data);
-};
-
-const saveMetaDataSingleFile = (_editionCount: number) => {
-  let metadata = metadataList.find((meta) => meta.edition == _editionCount);
-  log(`Writing metadata for ${_editionCount}: ${JSON.stringify(metadata)}`);
-  writeFileSync(
-    `${buildDir}/json/${_editionCount}.json`,
-    JSON.stringify(metadata, null, 2)
-  );
+  return randNum.join(generalSettings.dnaDelimiter);
 };
 
 function shuffle(array: any[]) {
@@ -333,97 +388,3 @@ function shuffle(array: any[]) {
   }
   return array;
 }
-
-const startCreating = async () => {
-  let layerConfigIndex = 0;
-  let editionCount = 1;
-  let failedCount = 0;
-  let abstractedIndexes: number[] = [];
-  let startPos = network == NETWORK.sol ? 0 : 1;
-  for (
-    let i = startPos;
-    i <= layerConfigurations[layerConfigurations.length - 1].growEditionSizeTo;
-    i++
-  ) {
-    abstractedIndexes.push(i);
-  }
-  if (shuffleLayerConfigurations) {
-    abstractedIndexes = shuffle(abstractedIndexes);
-  }
-  log(`Editions left to create: ${abstractedIndexes}`);
-  while (layerConfigIndex < layerConfigurations.length) {
-    const layers = layersSetup(
-      layerConfigurations[layerConfigIndex].layersOrder
-    );
-    while (
-      editionCount <= layerConfigurations[layerConfigIndex].growEditionSizeTo
-    ) {
-      let newDna = createDna(layers);
-      if (isDnaUnique(dnaList, newDna)) {
-        let results = constructLayerToDna(newDna, layers);
-        let loadedElements: any = [];
-
-        results.forEach((layer: any) => {
-          loadedElements.push(loadLayerImg(layer));
-        });
-
-        await Promise.all(loadedElements).then((renderObjectArray) => {
-          log("Clearing canvas");
-          ctx.clearRect(0, 0, format.width, format.height);
-          if (gif.export) {
-            hashlipsGiffer = new HashLipsGiffer(
-              canvas,
-              ctx,
-              `${buildDir}/gifs/${abstractedIndexes[0]}.gif`,
-              gif.repeat,
-              gif.quality,
-              gif.delay
-            );
-            hashlipsGiffer.start();
-          }
-          if (background.generate) {
-            drawBackground();
-          }
-          renderObjectArray.forEach((renderObject, index) => {
-            drawElement(
-              renderObject,
-              index,
-              layerConfigurations[layerConfigIndex].layersOrder.length
-            );
-            if (gif.export) {
-              hashlipsGiffer.add();
-            }
-          });
-          if (gif.export) {
-            hashlipsGiffer.stop();
-          }
-          log(`Editions left to create: ${abstractedIndexes}`);
-          saveImage(abstractedIndexes[0]);
-          addMetadata(newDna, abstractedIndexes[0]);
-          saveMetaDataSingleFile(abstractedIndexes[0]);
-          console.log(
-            `Created edition: ${abstractedIndexes[0]}, with DNA: ${sha1(
-              newDna
-            )}`
-          );
-        });
-        dnaList.add(filterDNAOptions(newDna));
-        editionCount++;
-        abstractedIndexes.shift();
-      } else {
-        console.log("DNA exists!");
-        failedCount++;
-        if (failedCount >= uniqueDnaTorrance) {
-          console.log(
-            `You need more layers or elements to grow your edition to ${layerConfigurations[layerConfigIndex].growEditionSizeTo} artworks!`
-          );
-          process.exit();
-        }
-      }
-    }
-    layerConfigIndex++;
-  }
-  writeMetaData(JSON.stringify(metadataList, null, 2));
-};
-
-export { startCreating };

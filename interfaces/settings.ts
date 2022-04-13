@@ -7,27 +7,27 @@ export interface IBackgroundSettings {
   static: boolean;
 }
 
-export interface ILayerConfig {
-  growEditionSizeTo: number;
-  layersOrder: ILayersOrder[];
-}
-
-export interface ILayersOrder {
-  name: string;
-  options?: ILayersOptions;
-}
-
-export interface ILayersOptions {
-  blend?: MODE;
-  bypassDNA?: boolean;
-  displayName?: string;
-  opacity?: string;
-}
-
 export interface IFormatSettings {
   height: number;
   width: number;
   smoothing: boolean;
+}
+
+export interface IGeneralMetaData {
+  baseUri: string;
+  description: string;
+  namePrefix: string;
+}
+
+export interface IGeneralSettings {
+  buildDirectory: string;
+  generateDebugLogs: boolean;
+  dnaDelimiter: string;
+  extraMetadata: any;
+  layersDirectory: string;
+  rarityDelimiter: string;
+  uniqueDnaTolerance: number;
+  shuffleLayerConfigurations: boolean;
 }
 
 export interface IGifPreviewSettings {
@@ -44,6 +44,23 @@ export interface IGifSettings {
   export: boolean;
   quality: number;
   repeat: number;
+}
+
+export interface ILayerConfig {
+  growEditionSizeTo: number;
+  layersOrder: ILayersOrder[];
+}
+
+export interface ILayersOrder {
+  name: string;
+  options?: ILayersOptions;
+}
+
+export interface ILayersOptions {
+  blend?: MODE;
+  bypassDNA?: boolean;
+  displayName?: string;
+  opacity?: string;
 }
 
 export interface IPixelFormatSettings {

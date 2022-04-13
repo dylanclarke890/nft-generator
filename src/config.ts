@@ -1,6 +1,8 @@
 import {
   IBackgroundSettings,
   IFormatSettings,
+  IGeneralMetaData,
+  IGeneralSettings,
   IGifPreviewSettings,
   IGifSettings,
   ILayerConfig,
@@ -12,15 +14,24 @@ import ISolanaData from "../interfaces/ISolanaData";
 import MODE from "../constants/blend_mode";
 import NETWORK from "../constants/network";
 
-const debugLogs = false;
-const extraMetadata = {};
-const rarityDelimiter = "#";
-const uniqueDnaTorrance = 10000;
+const basePath = process.cwd();
+const generalSettings: IGeneralSettings = {
+  buildDirectory: `${basePath}/build`,
+  generateDebugLogs: false,
+  dnaDelimiter: "-",
+  extraMetadata: {},
+  layersDirectory: `${basePath}/layers`,
+  rarityDelimiter: "#",
+  shuffleLayerConfigurations: false,
+  uniqueDnaTolerance: 10000,
+};
 
 // General metadata for Ethereum
-const namePrefix = "My First Collection";
-const description = "My first description for my first collection";
-const baseUri = "ipfs://NewUriToReplace";
+const generalMetaData: IGeneralMetaData = {
+  baseUri: "ipfs://NewUriToReplace",
+  description: "My first description for my first collection",
+  namePrefix: "My First Collection",
+};
 
 const network: NETWORK = NETWORK.eth;
 const solanaMetadata: ISolanaData = {
@@ -47,7 +58,6 @@ const layerConfigurations: ILayerConfig[] = [
     ],
   },
 ];
-const shuffleLayerConfigurations = false;
 
 const format: IFormatSettings = {
   height: 512,
@@ -104,19 +114,13 @@ const preview_gif: IGifPreviewSettings = {
 
 export {
   format,
-  baseUri,
-  description,
+  generalMetaData,
   background,
-  uniqueDnaTorrance,
+  generalSettings,
   layerConfigurations,
-  rarityDelimiter,
   preview,
-  shuffleLayerConfigurations,
-  debugLogs,
-  extraMetadata,
   pixelFormat,
   text,
-  namePrefix,
   network,
   solanaMetadata,
   gif,

@@ -1,11 +1,11 @@
 export default interface ISolanaData {
-  symbol: "YC";
+  symbol: string;
   seller_fee_basis_points: number;
   external_url: string;
-  creators: [
-    {
-      address: string;
-      share: number;
-    }
-  ];
+  creators: ICreator[];
+}
+
+export interface ICreator {
+  address: string;
+  share: number;
 }

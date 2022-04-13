@@ -29,8 +29,12 @@ import {
 } from "../services/metadata-helpers";
 import { getRandomElement, shuffle } from "../services/randomiser";
 import { addSolanaMetaData } from "../services/solana-helper";
-import GifGenerator from "../modules/GifGenerator";
 import { ILayersOrder } from "../interfaces/settings";
+import {
+  addToGif,
+  finishGifCreation,
+  startGifCreation,
+} from "../services/gif-helper";
 
 var metadataList: any[] = [];
 var attributesList: any[] = [];
@@ -39,7 +43,6 @@ var dnaList = new Set();
 const canvas = createCanvas(format.width, format.height);
 const ctx: any = canvas.getContext("2d");
 ctx.imageSmoothingEnabled = format.smoothing;
-let gifGenerator: GifGenerator | null = null;
 
 export function buildSetup() {
   const buildDir = generalSettings.buildDirectory;
@@ -71,31 +74,19 @@ export async function startCreating() {
       const newDna = createDna(layers);
       if (isDnaUnique(dnaList, newDna)) {
         const results = constructLayerToDna(newDna, layers);
-        const loadedElements = results.map((element: any) =>
-          loadLayerImg(element)
-        );
-        await Promise.all(loadedElements).then((renderObjectArray) => {
+        const elements = results.map((element: any) => loadLayerImg(element));
+        await Promise.all(elements).then((renderObjectArray) => {
           log("Clearing canvas");
           ctx.clearRect(0, 0, format.width, format.height);
-
           const index = abstractIndexes[0];
-          if (gif.export) {
-            gifGenerator = new GifGenerator(
-              canvas,
-              ctx,
-              `${generalSettings.buildDirectory}/gifs/${index}.gif`,
-              gif.repeat,
-              gif.quality,
-              gif.delay
-            );
-            gifGenerator.start();
-          }
-          if (background.generate) drawBackground();
+          startGifCreation(canvas, ctx, index);
+          drawBackground();
+
           renderObjectArray.forEach((renderObject, index) => {
             drawElement(renderObject, index, layerConfig.layersOrder.length);
-            if (gif.export) gifGenerator!.add();
+            addToGif();
           });
-          if (gif.export) gifGenerator!.stop();
+          finishGifCreation();
           log(`Editions left to create: ${abstractIndexes}`);
           saveImage(canvas, index);
           addMetadata(newDna, index);
@@ -156,8 +147,10 @@ const genColor = () => {
 };
 
 const drawBackground = () => {
-  ctx.fillStyle = background.static ? background.default : genColor();
-  ctx.fillRect(0, 0, format.width, format.height);
+  if (background.generate) {
+    ctx.fillStyle = background.static ? background.default : genColor();
+    ctx.fillRect(0, 0, format.width, format.height);
+  }
 };
 
 const addMetadata = (_dna: string, _edition: number) => {

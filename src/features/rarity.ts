@@ -6,7 +6,6 @@ const buildDir = generalSettings.buildDirectory;
 
 export function rarity() {
   const rawdata = fs.readFileSync(`${buildDir}/json/_metadata.json`, "utf-8");
-  console.log("HERE");
   const data: IMetaData[] = JSON.parse(rawdata);
   const editionSize = data.length;
   const rarityData: any = [];
@@ -69,5 +68,3 @@ function occurencesToOccurenceString(rarityData: any, editionSize: number) {
     }
   }
 }
-
-rarity();

@@ -49,5 +49,3 @@ async function previewGif(_data: any[]) {
   });
   finishGif(true);
 }
-
-previewGif(imageList);

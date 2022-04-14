@@ -133,5 +133,3 @@ export async function generateMetaData() {
   generateMetaDataBuildSetup();
   await startCreating();
 }
-
-generateMetaData();

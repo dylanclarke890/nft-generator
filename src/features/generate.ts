@@ -177,5 +177,3 @@ export async function generate() {
   generateBuildSetup();
   await startCreating();
 }
-
-generate();

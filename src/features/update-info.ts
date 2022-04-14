@@ -45,5 +45,3 @@ export function updateInfo() {
     console.log(`Updated name prefix for images to ===> ${namePrefix}`);
   }
 }
-
-updateInfo();

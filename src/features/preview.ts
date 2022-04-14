@@ -1,6 +1,9 @@
 import fs from "fs";
 import { loadImage, NodeCanvasRenderingContext2D } from "canvas";
-import { generalSettings, preview as previewSettings } from "../constants/config";
+import {
+  generalSettings,
+  preview as previewSettings,
+} from "../constants/config";
 import { newCanvas } from "../services/canvas-helper";
 import { IMetaData } from "../interfaces/general";
 
@@ -42,5 +45,3 @@ async function createPreview(
     });
   }
 }
-
-preview();

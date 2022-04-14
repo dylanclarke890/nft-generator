@@ -61,7 +61,7 @@ const startCreating = async () => {
   });
 };
 
-pixelateBuildSetup();
-startCreating();
-
-
+export async function pixelate() {
+  pixelateBuildSetup();
+  await startCreating();
+}

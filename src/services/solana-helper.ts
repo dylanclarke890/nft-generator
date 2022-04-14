@@ -1,5 +1,5 @@
 import { ISolanaMetaData } from "../interfaces/solana";
-import { generalSettings, solanaMetadata } from "../src/config";
+import { generalSettings, solanaMetadata } from "../constants/config";
 
 export function addSolanaMetaData(
   metadata: any,

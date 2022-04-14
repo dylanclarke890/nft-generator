@@ -1,6 +1,6 @@
 import sha1 from "sha1";
 import { IAttribute, IMetaData } from "../interfaces/general";
-import { generalMetaData, generalSettings } from "../src/config";
+import { generalMetaData, generalSettings } from "../constants/config";
 
 export function addMetaData(
   dna: string,

@@ -3,7 +3,7 @@ import {
   createCanvas,
   NodeCanvasRenderingContext2D as CanvasContext,
 } from "canvas";
-import { background, format, text } from "../src/config";
+import { background, format, text } from "../constants/config";
 import { genColor } from "./randomiser";
 
 export function newCanvas(): [Canvas, CanvasContext] {

@@ -1,6 +1,6 @@
 import fs from "fs";
 import { loadImage } from "canvas";
-import { preview_gif, format, generalSettings } from "../src/config";
+import { preview_gif, format, generalSettings } from "../constants/config";
 import { finishGif, snapshotGif, startGif } from "../services/gif-helper";
 import { shuffle } from "../services/randomiser";
 import { newCanvas } from "../services/canvas-helper";
@@ -20,7 +20,7 @@ const imageList = fs
   .readdirSync(imageDir)
   .map((file) => loadImg(`${imageDir}/${file}`));
 
-const saveProjectPreviewGIF = async (_data: any[]) => {
+async function previewGif(_data: any[]) {
   const { numberOfImages, order, imageName } = preview_gif;
   if (_data.length < numberOfImages)
     throw new Error(
@@ -48,6 +48,6 @@ const saveProjectPreviewGIF = async (_data: any[]) => {
     });
   });
   finishGif(true);
-};
+}
 
-saveProjectPreviewGIF(imageList);
+previewGif(imageList);

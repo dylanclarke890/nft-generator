@@ -11,8 +11,8 @@ import {
   IPreviewSettings,
   ITextSettings,
 } from "../interfaces/settings";
-import MODE from "../constants/blend_mode";
-import NETWORK from "../constants/network";
+import MODE from "./blend_mode";
+import NETWORK from "./network";
 import { ISolanaData } from "../interfaces/solana";
 
 const basePath = process.cwd();

@@ -1,7 +1,7 @@
 import { Canvas, loadImage } from "canvas";
 import { writeFileSync } from "fs";
 import { IBaseMetaData, IDNALayer } from "../interfaces/general";
-import { generalSettings } from "../src/config";
+import { generalSettings } from "../constants/config";
 import { logIfDebug } from "./logger";
 
 const buildDir = generalSettings.buildDirectory;

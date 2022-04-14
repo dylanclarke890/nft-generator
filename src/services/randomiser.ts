@@ -1,4 +1,4 @@
-import { background } from "../src/config";
+import { background } from "../constants/config";
 
 export function shuffle(array: any[]) {
   let currentIndex = array.length,

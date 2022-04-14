@@ -1,14 +1,12 @@
 import NETWORK from "../constants/network";
-import { existsSync, mkdirSync, readdirSync, rmSync } from "fs";
+import { readdirSync } from "fs";
 import sha1 from "sha1";
-import { createCanvas } from "canvas";
 import {
   format,
   generalMetaData,
   generalSettings,
-  gif,
   layerConfigs,
-} from "./config";
+} from "../constants/config";
 import { logIfDebug } from "../services/logger";
 import {
   loadLayerImg,
@@ -36,26 +34,21 @@ import {
 } from "../interfaces/general";
 import MODE from "../constants/blend_mode";
 import { addMetaData } from "../services/metadata-helper";
-import { addCanvasContent, drawBackground } from "../services/canvas-helper";
+import {
+  addCanvasContent,
+  drawBackground,
+  newCanvas,
+} from "../services/canvas-helper";
+import { generateBuildSetup } from "../services/build-setup";
 
 let metadataList: IBaseMetaData[] = [];
 let attributesList: IAttribute[] = [];
 let dnaList = new Set();
 
-const canvas = createCanvas(format.width, format.height);
-const ctx = canvas.getContext("2d");
+const [canvas, ctx] = newCanvas();
 ctx.imageSmoothingEnabled = format.smoothing;
 
-export function buildSetup() {
-  const buildDir = generalSettings.buildDirectory;
-  if (existsSync(buildDir)) rmSync(buildDir, { recursive: true });
-  mkdirSync(buildDir);
-  if (gif.export) mkdirSync(`${buildDir}/gifs`);
-  mkdirSync(`${buildDir}/images`);
-  mkdirSync(`${buildDir}/json`);
-}
-
-export async function startCreating() {
+async function startCreating() {
   let layerConfigIndex = 0;
   let editionCount = 1;
   let failedCount = 0;
@@ -179,3 +172,10 @@ const createDna = (_layers: ILayer[]) => {
   });
   return randNum.join(generalSettings.dnaDelimiter);
 };
+
+export async function generate() {
+  generateBuildSetup();
+  await startCreating();
+}
+
+generate();

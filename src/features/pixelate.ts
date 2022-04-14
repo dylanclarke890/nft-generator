@@ -1,28 +1,20 @@
-import fs from "fs";
+import { readdirSync, writeFileSync } from "fs";
 import path from "path";
-import { createCanvas, loadImage } from "canvas";
+import { loadImage } from "canvas";
 import { IImage, IImageData } from "../interfaces/generate-metadata";
-import { format, pixelFormat, generalSettings } from "../src/config";
+import { pixelFormat, generalSettings } from "../constants/config";
+import { newCanvas } from "../services/canvas-helper";
+import { pixelateBuildSetup } from "../services/build-setup";
 
 const inputDir = `${generalSettings.buildDirectory}/images`;
-const buildDir = `${generalSettings.buildDirectory}/pixel_images`;
-
-const canvas = createCanvas(format.width, format.height);
-const ctx = canvas.getContext("2d");
-
-const buildSetup = () => {
-  if (fs.existsSync(buildDir)) {
-    fs.rmdirSync(buildDir, { recursive: true });
-  }
-  fs.mkdirSync(buildDir);
-};
+const outputDir = `${generalSettings.buildDirectory}/pixel-images`;
+const [canvas, ctx] = newCanvas();
 
 const getImages = (_dir: string) => {
   try {
-    return fs
-      .readdirSync(_dir)
+    return readdirSync(_dir)
       .filter((item) => {
-        const extension = path.extname(`${_dir}${item}`);
+        let extension = path.extname(`${_dir}${item}`);
         if (extension == ".png" || extension == ".jpg") {
           return item;
         }
@@ -51,8 +43,8 @@ const draw = (imgData: IImageData) => {
 };
 
 const saveImage = (imgData: IImageData) => {
-  fs.writeFileSync(
-    `${buildDir}/${imgData.imgObject.filename}`,
+  writeFileSync(
+    `${outputDir}/${imgData.imgObject.filename}`,
     canvas.toBuffer("image/png")
   );
 };
@@ -69,5 +61,7 @@ const startCreating = async () => {
   });
 };
 
-buildSetup();
+pixelateBuildSetup();
 startCreating();
+
+

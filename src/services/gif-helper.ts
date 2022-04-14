@@ -1,5 +1,5 @@
 import { Canvas, NodeCanvasRenderingContext2D } from "canvas";
-import { generalSettings, gif } from "../src/config";
+import { generalSettings, gif } from "../constants/config";
 import GifGenerator from "../modules/GifGenerator";
 
 let gifGenerator: GifGenerator | null = null;

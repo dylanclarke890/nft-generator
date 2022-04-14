@@ -1,4 +1,4 @@
-import { generalSettings } from "../src/config";
+import { generalSettings } from "../constants/config";
 
 export function getLayerName(_str: string) {
   const nameWithoutExtension = _str.slice(0, -4);

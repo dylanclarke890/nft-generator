@@ -1,30 +1,23 @@
 import fs from "fs";
 import path from "path";
-import { createCanvas, loadImage } from "canvas";
+import { loadImage } from "canvas";
 import {
-  format,
   generalMetaData,
   generalSettings,
   generateMetadata,
-} from "../src/config";
+} from "../constants/config";
 import { randomIntFromInterval } from "../services/randomiser";
 import { IColor, IImage, IImageData } from "../interfaces/generate-metadata";
 import { IAttribute, IMetaData } from "../interfaces/general";
 import { writeMetaData } from "../services/file-handling";
+import { newCanvas } from "../services/canvas-helper";
+import { generateMetaDataBuildSetup } from "../services/build-setup";
 
 const buildDir = `${generalSettings.buildDirectory}/json`;
 const inputDir = `${generalSettings.buildDirectory}/images`;
 
-const canvas = createCanvas(format.width, format.height);
-const ctx = canvas.getContext("2d");
+const [canvas, ctx] = newCanvas();
 const metadataList: IMetaData[] = [];
-
-const buildSetup = () => {
-  if (fs.existsSync(buildDir)) {
-    fs.rmdirSync(buildDir, { recursive: true });
-  }
-  fs.mkdirSync(buildDir);
-};
 
 const getImages = (_dir: string): IImage[] => {
   try {
@@ -136,5 +129,9 @@ const startCreating = async () => {
   writeMetaData(JSON.stringify(metadataList, null, 2));
 };
 
-buildSetup();
-startCreating();
+export async function generateMetaData() {
+  generateMetaDataBuildSetup();
+  await startCreating();
+}
+
+generateMetaData();

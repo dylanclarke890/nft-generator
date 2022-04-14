@@ -1,6 +1,16 @@
-import { NodeCanvasRenderingContext2D as CanvasContext } from "canvas";
+import {
+  Canvas,
+  createCanvas,
+  NodeCanvasRenderingContext2D as CanvasContext,
+} from "canvas";
 import { background, format, text } from "../src/config";
 import { genColor } from "./randomiser";
+
+export function newCanvas(): [Canvas, CanvasContext] {
+  const canvas = createCanvas(format.width, format.height);
+  const ctx = canvas.getContext("2d");
+  return [canvas, ctx];
+}
 
 export function addCanvasContent(
   renderObject: any,

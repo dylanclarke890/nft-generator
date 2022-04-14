@@ -14,12 +14,12 @@
   "scripts": {
     "build": "ts-node index.ts",
     "generate": "ts-node index.ts",
-    "rarity": "ts-node utils/rarity.ts",
-    "preview": "ts-node utils/preview.ts",
-    "pixelate": "ts-node utils/pixelate.ts",
-    "update_info": "ts-node utils/update_info.ts",
-    "preview_gif": "ts-node utils/preview_gif.ts",
-    "generate_metadata": "ts-node utils/generate_metadata.ts"
+    "rarity": "ts-node features/rarity.ts",
+    "preview": "ts-node features/preview.ts",
+    "pixelate": "ts-node features/pixelate.ts",
+    "update_info": "ts-node features/update_info.ts",
+    "preview_gif": "ts-node features/preview_gif.ts",
+    "generate_metadata": "ts-node features/generate_metadata.ts"
   },
   "author": "Dylan Clarke",
   "license": "MIT",

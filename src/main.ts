@@ -26,7 +26,7 @@ import {
 import { getRandomElement, shuffle } from "../services/randomiser";
 import { addSolanaMetaData } from "../services/solana-helper";
 import { ILayersOrder } from "../interfaces/settings";
-import { snapshot, finishGif, startGif } from "../services/gif-helper";
+import { snapshotGif, finishGif, startGif } from "../services/gif-helper";
 import {
   IAttribute,
   IBaseMetaData,
@@ -78,11 +78,11 @@ export async function startCreating() {
           logIfDebug("Clearing canvas");
           ctx.clearRect(0, 0, format.width, format.height);
           const i = abstractIndexes[0];
-          startGif(canvas, ctx, i);
+          startGif(canvas, ctx, `gifs/${i}.gif`);
           drawBackground(ctx);
           renderObjectArray.forEach((renderObject, index) => {
             drawElement(renderObject, index);
-            snapshot();
+            snapshotGif();
           });
           finishGif();
           logIfDebug(`Editions left to create: ${abstractIndexes}`);

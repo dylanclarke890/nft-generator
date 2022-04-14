@@ -13,13 +13,15 @@
   },
   "scripts": {
     "build": "ts-node index.ts",
-    "generate": "ts-node src/features/generate.ts",
-    "rarity": "ts-node src/features/rarity.ts",
-    "preview": "ts-node src/features/preview.ts",
-    "pixelate": "ts-node src/features/pixelate.ts",
-    "update-info": "ts-node src/features/update-info.ts",
-    "preview-gif": "ts-node src/features/preview-gif.ts",
-    "generate-metadata": "ts-node src/features/generate-metadata.ts"
+    "cli": "ts-node cli/cli-service.ts",
+    "features": "ts-node cli/cli-service.ts features",
+    "generate": "ts-node cli/cli-service.ts feature generate",
+    "rarity": "ts-node cli/cli-service.ts feature rarity",
+    "preview": "ts-node cli/cli-service.ts feature preview",
+    "pixelate": "ts-node cli/cli-service.ts feature pixelate",
+    "update-info": "ts-node cli/cli-service.ts feature update-info",
+    "preview-gif": "ts-node cli/cli-service.ts feature preview-gif",
+    "generate-metadata": "ts-node cli/cli-service.ts fe generate-metadata"
   },
   "author": "Dylan Clarke",
   "license": "MIT",

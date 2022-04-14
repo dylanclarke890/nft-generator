@@ -16,26 +16,25 @@ const loadImg = async (_img: string) => {
   });
 };
 
-const imageList = fs
-  .readdirSync(imageDir)
-  .map((file) => loadImg(`${imageDir}/${file}`));
-
-async function previewGif(_data: any[]) {
+export async function previewGif() {
+  const data: any = fs
+    .readdirSync(imageDir)
+    .map((file) => loadImg(`${imageDir}/${file}`));
   const { numberOfImages, order, imageName } = preview_gif;
-  if (_data.length < numberOfImages)
+  if (data.length < numberOfImages)
     throw new Error(
       `You do not have enough images to create a gif with ${numberOfImages} images.`
     );
 
   const { width, height } = format;
   console.log(
-    `Preparing a ${width}x${height} project preview with ${_data.length} images.`
+    `Preparing a ${width}x${height} project preview with ${data.length} images.`
   );
 
   ctx.clearRect(0, 0, width, height);
   startGif(canvas, ctx, imageName, true);
 
-  await Promise.all(_data).then((loadedImgs) => {
+  await Promise.all(data).then((loadedImgs) => {
     if (order == "DESC") loadedImgs.reverse();
     else if (order == "MIXED") loadedImgs = shuffle(loadedImgs);
     if (numberOfImages > 0) loadedImgs = loadedImgs.slice(0, numberOfImages);

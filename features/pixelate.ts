@@ -1,11 +1,12 @@
 import fs from "fs";
 import path from "path";
 import { createCanvas, loadImage } from "canvas";
-const basePath = process.cwd();
-const buildDir = `${basePath}/build/pixel_images`;
-const inputDir = `${basePath}/build/images`;
-import { format, pixelFormat } from "../src/config";
-import console from "console";
+import { IImage, IImageData } from "../interfaces/generate-metadata";
+import { format, pixelFormat, generalSettings } from "../src/config";
+
+const inputDir = `${generalSettings.buildDirectory}/images`;
+const buildDir = `${generalSettings.buildDirectory}/pixel_images`;
+
 const canvas = createCanvas(format.width, format.height);
 const ctx = canvas.getContext("2d");
 
@@ -16,70 +17,54 @@ const buildSetup = () => {
   fs.mkdirSync(buildDir);
 };
 
-const getImages = (_dir: any) => {
+const getImages = (_dir: string) => {
   try {
     return fs
       .readdirSync(_dir)
       .filter((item) => {
-        let extension = path.extname(`${_dir}${item}`);
+        const extension = path.extname(`${_dir}${item}`);
         if (extension == ".png" || extension == ".jpg") {
           return item;
         }
       })
-      .map((i) => {
-        return {
-          filename: i,
-          path: `${_dir}/${i}`,
-        };
-      });
+      .map((i) => ({
+        filename: i,
+        path: `${_dir}/${i}`,
+      }));
   } catch {
-    return null;
+    throw new Error("Please generate collection first.");
   }
 };
 
-const loadImgData = async (_imgObject: any) => {
-  try {
-    const image = await loadImage(`${_imgObject.path}`);
-    return {
-      imgObject: _imgObject,
-      loadedImage: image,
-    };
-  } catch (error) {
-    console.error("Error loading image:", error);
-  }
+const loadImgData = async (imgObject: IImage) => {
+  const loadedImage = await loadImage(`${imgObject.path}`);
+  return { imgObject, loadedImage };
 };
 
-const draw = (_imgObject: any) => {
-  let size = pixelFormat.ratio;
-  let w = canvas.width * size;
-  let h = canvas.height * size;
+const draw = (imgData: IImageData) => {
+  const size = pixelFormat.ratio;
+  const w = canvas.width * size;
+  const h = canvas.height * size;
   ctx.imageSmoothingEnabled = false;
-  ctx.drawImage(_imgObject.loadedImage, 0, 0, w, h);
+  ctx.drawImage(imgData.loadedImage, 0, 0, w, h);
   ctx.drawImage(canvas, 0, 0, w, h, 0, 0, canvas.width, canvas.height);
 };
 
-const saveImage = (_loadedImageObject: any) => {
+const saveImage = (imgData: IImageData) => {
   fs.writeFileSync(
-    `${buildDir}/${_loadedImageObject.imgObject.filename}`,
+    `${buildDir}/${imgData.imgObject.filename}`,
     canvas.toBuffer("image/png")
   );
 };
 
 const startCreating = async () => {
   const images = getImages(inputDir);
-  if (images == null) {
-    console.log("Please generate collection first.");
-    return;
-  }
-  let loadedImageObjects: any[] = [];
-  images.forEach((imgObject) => {
-    loadedImageObjects.push(loadImgData(imgObject));
-  });
-  await Promise.all(loadedImageObjects).then((loadedImageObjectArray) => {
-    loadedImageObjectArray.forEach((loadedImageObject) => {
-      draw(loadedImageObject);
-      saveImage(loadedImageObject);
-      console.log(`Pixelated image: ${loadedImageObject.imgObject.filename}`);
+  const allImgData = images.map((imgObject) => loadImgData(imgObject));
+  await Promise.all(allImgData).then((loadedImgData) => {
+    loadedImgData.forEach((imgData) => {
+      draw(imgData);
+      saveImage(imgData);
+      console.log(`Pixelated image: ${imgData.imgObject.filename}`);
     });
   });
 };

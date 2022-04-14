@@ -1,7 +1,7 @@
 {
-  "name": "hashlips_art_engine",
+  "name": "nft-generator",
   "version": "1.1.1",
-  "description": "HashLips Art Engine is a tool used to create multiple different instances of artworks based on provided layers.",
+  "description": "NFT Generator is a tool used to create generative art based on provided layers.",
   "main": "index.js",
   "bin": "index.js",
   "pkg": {
@@ -12,7 +12,7 @@
     ]
   },
   "scripts": {
-    "build": "ts-node index.ts",
+    "build": "ts-node cli/cli-service.ts feature generate",
     "cli": "ts-node cli/cli-service.ts",
     "features": "ts-node cli/cli-service.ts features",
     "generate": "ts-node cli/cli-service.ts feature generate",

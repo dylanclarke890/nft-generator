@@ -1,14 +1,19 @@
 import NETWORK from "../constants/network";
 import fs from "fs";
-const basePath = process.cwd();
-import { generalMetaData, solanaMetadata } from "../src/config";
+import {
+  generalMetaData,
+  generalSettings,
+  solanaMetadata,
+} from "../src/config";
+import { IMetaData } from "../interfaces/general";
 
 const { baseUri, namePrefix, description, network } = generalMetaData;
-// read json data
-let rawdata: any = fs.readFileSync(`${basePath}/build/json/_metadata.json`);
-let data = JSON.parse(rawdata);
+const buildDir = generalSettings.buildDirectory;
 
-data.forEach((item: any) => {
+const rawdata = fs.readFileSync(`${buildDir}/json/_metadata.json`, "utf-8");
+const data: IMetaData[] = JSON.parse(rawdata);
+
+data.forEach((item) => {
   if (generalMetaData.network == NETWORK.sol) {
     item.name = `${namePrefix} #${item.edition}`;
     item.description = description;
@@ -19,13 +24,13 @@ data.forEach((item: any) => {
     item.image = `${baseUri}/${item.edition}.png`;
   }
   fs.writeFileSync(
-    `${basePath}/build/json/${item.edition}.json`,
+    `${buildDir}/json/${item.edition}.json`,
     JSON.stringify(item, null, 2)
   );
 });
 
 fs.writeFileSync(
-  `${basePath}/build/json/_metadata.json`,
+  `${buildDir}/json/_metadata.json`,
   JSON.stringify(data, null, 2)
 );
 

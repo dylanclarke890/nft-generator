@@ -1,50 +1,37 @@
-const basePath = process.cwd();
 import fs from "fs";
-import { createCanvas, loadImage } from "canvas";
-const buildDir = `${basePath}/build`;
+import { loadImage } from "canvas";
+import { generalSettings, preview } from "../src/config";
+import { newCanvas } from "../services/canvas-helper";
+import { IMetaData } from "../interfaces/general";
 
-import { preview } from "../src/config";
+const buildDir = generalSettings.buildDirectory;
 
 // read json data
-const rawdata: any = fs.readFileSync(`${basePath}/build/json/_metadata.json`);
+const rawdata = fs.readFileSync(`${buildDir}/json/_metadata.json`, "utf-8");
 const metadataList = JSON.parse(rawdata);
 
-const saveProjectPreviewImage = async (_data: any) => {
-  // Extract from preview config
+const saveProjectPreviewImage = async (_data: IMetaData[]) => {
   const { thumbWidth, thumbPerRow, imageRatio, imageName } = preview;
-  // Calculate height on the fly
   const thumbHeight = thumbWidth * imageRatio;
-  // Prepare canvas
-  const previewCanvasWidth = thumbWidth * thumbPerRow;
-  const previewCanvasHeight =
-    thumbHeight * Math.ceil(_data.length / thumbPerRow);
-  // Shout from the mountain tops
+  const w = thumbWidth * thumbPerRow;
+  const h = thumbHeight * Math.ceil(_data.length / thumbPerRow);
   console.log(
-    `Preparing a ${previewCanvasWidth}x${previewCanvasHeight} project preview with ${_data.length} thumbnails.`
+    `Preparing a ${w}x${h} project preview with ${_data.length} thumbnails.`
   );
 
-  // Initiate the canvas now that we have calculated everything
   const previewPath = `${buildDir}/${imageName}`;
-  const previewCanvas = createCanvas(previewCanvasWidth, previewCanvasHeight);
-  const previewCtx = previewCanvas.getContext("2d");
+  const [canvas, ctx] = newCanvas();
 
-  // Iterate all NFTs and insert thumbnail into preview image
-  // Don't want to rely on "edition" for assuming index
-  for (let index = 0; index < _data.length; index++) {
-    const nft = _data[index];
-    await loadImage(`${buildDir}/images/${nft.edition}.png`).then((image) => {
-      previewCtx.drawImage(
-        image,
-        thumbWidth * (index % thumbPerRow),
-        thumbHeight * Math.trunc(index / thumbPerRow),
-        thumbWidth,
-        thumbHeight
-      );
+  for (let i = 0; i < _data.length; i++) {
+    const nft = _data[i];
+    const w = thumbWidth * (i % thumbPerRow);
+    const y = thumbHeight * Math.trunc(i / thumbPerRow);
+    await loadImage(`${buildDir}/images/${nft.edition}.png`).then((img) => {
+      ctx.drawImage(img, w, y, thumbWidth, thumbHeight);
     });
   }
 
-  // Write Project Preview to file
-  fs.writeFileSync(previewPath, previewCanvas.toBuffer("image/png"));
+  fs.writeFileSync(previewPath, canvas.toBuffer("image/png"));
   console.log(`Project preview image located at: ${previewPath}`);
 };
 

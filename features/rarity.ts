@@ -1,83 +1,63 @@
 import fs from "fs";
-const basePath = process.cwd();
-const layersDir = `${basePath}/layers`;
+import { IMetaData, IRarityTraits } from "../interfaces/general";
 
-import { layerConfigs } from "../src/config";
+import { generalSettings, layerConfigs } from "../src/config";
 import { getElements } from "../src/main";
 
+const buildDir = generalSettings.buildDirectory;
+
 // read json data
-let rawdata: any = fs.readFileSync(`${basePath}/build/json/_metadata.json`);
-let data = JSON.parse(rawdata);
-let editionSize = data.length;
+const rawdata = fs.readFileSync(`${buildDir}/json/_metadata.json`, "utf-8");
+const data: IMetaData[] = JSON.parse(rawdata);
+const editionSize = data.length;
 
-let rarityData: any = [];
+const rarityData: any = [];
 
-// intialize layers to chart
-layerConfigs.forEach((config: any) => {
-  let layers = config.layersOrder;
-
-  layers.forEach((layer: any) => {
+layerConfigs.forEach((config) => {
+  config.layersOrder.forEach((layer) => {
     // get elements for each layer
-    let elementsForLayer: any = [];
-    let elements = getElements(`${layersDir}/${layer.name}/`);
-    elements.forEach((element) => {
-      // just get name and weight for each element
-      let rarityDataElement = {
-        trait: element.name,
-        weight: element.weight.toFixed(0),
-        occurrence: 0, // initialize at 0
-      };
-      elementsForLayer.push(rarityDataElement);
-    });
-    let layerName =
-      layer.options?.["displayName"] != undefined
-        ? layer.options?.["displayName"]
-        : layer.name;
-    // don't include duplicate layers
-    if (!rarityData.includes(layer.name)) {
-      // add elements for each layer to chart
-      rarityData[layerName] = elementsForLayer;
-    }
+    const layerElements: IRarityTraits[] = getElements(layer.name).map((e) => ({
+      trait: e.name,
+      weight: e.weight.toFixed(0),
+      occurrence: 0, // initialize at 0
+    }));
+    const layerName = layer.options?.["displayName"] ?? layer.name;
+    if (!rarityData.includes(layerName)) rarityData[layerName] = layerElements;
   });
 });
 
 // fill up rarity chart with occurrences from metadata
-data.forEach((element: any) => {
-  let attributes = element.attributes;
-  attributes.forEach((attribute: any) => {
-    let traitType = attribute.trait_type;
-    let value = attribute.value;
-
-    let rarityDataTraits = rarityData[traitType];
-    rarityDataTraits.forEach((rarityDataTrait: any) => {
-      if (rarityDataTrait.trait == value) {
-        // keep track of occurrences
-        rarityDataTrait.occurrence++;
-      }
+data.forEach((e) => {
+  e.attributes.forEach((attribute) => {
+    const traitType = attribute.trait_type;
+    const value = attribute.value;
+    const rarityDataTraits: IRarityTraits[] = rarityData[traitType];
+    rarityDataTraits.forEach((rarityDataTrait) => {
+      if (rarityDataTrait.trait == value) rarityDataTrait.occurrence++;
     });
   });
 });
 
 // convert occurrences to occurence string
-for (var layer in rarityData) {
-  for (var attribute in rarityData[layer]) {
+for (let layer in rarityData) {
+  for (let attr in rarityData[layer]) {
     // get chance
-    let chance = (
-      (rarityData[layer][attribute].occurrence / editionSize) *
+    const chance = (
+      (rarityData[layer][attr].occurrence / editionSize) *
       100
     ).toFixed(2);
 
     // show two decimal places in percent
     rarityData[layer][
-      attribute
-    ].occurrence = `${rarityData[layer][attribute].occurrence} in ${editionSize} editions (${chance} %)`;
+      attr
+    ].occurrence = `${rarityData[layer][attr].occurrence} in ${editionSize} editions (${chance} %)`;
   }
 }
 
 // print out rarity data
-for (var layer in rarityData) {
+for (let layer in rarityData) {
   console.log(`Trait type: ${layer}`);
-  for (var trait in rarityData[layer]) {
+  for (let trait in rarityData[layer]) {
     console.log(rarityData[layer][trait]);
   }
   console.log();

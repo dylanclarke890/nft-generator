@@ -1,4 +1,5 @@
 import MODE from "../constants/blend_mode";
+import { ILayersOrder } from "./settings";
 
 export interface ILayer {
   id: number;
@@ -30,7 +31,7 @@ export interface IAttribute {
 }
 
 export interface IBaseMetaData {
-  attributes: any[];
+  attributes: IAttribute[];
   description: string;
   edition: number;
   image: string;
@@ -42,4 +43,10 @@ export interface IMetaData extends IBaseMetaData {
   date?: number;
   dna?: string;
   [key: string]: any;
+}
+
+export interface IRarityTraits {
+  trait: string;
+  weight: string;
+  occurrence: number;
 }

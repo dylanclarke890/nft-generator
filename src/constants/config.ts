@@ -60,7 +60,7 @@ const layerConfigs: ILayerConfig[] = [
   },
 ];
 
-const format: IFormatSettings = {
+const formatSettings: IFormatSettings = {
   height: 512,
   smoothing: false,
   width: 512,
@@ -68,7 +68,7 @@ const format: IFormatSettings = {
 
 const gif: IGifSettings = {
   delay: 500,
-  export: false,
+  export: true,
   quality: 100,
   repeat: 0,
 };
@@ -90,16 +90,16 @@ const pixelFormat: IPixelFormatSettings = {
   ratio: 2 / 128,
 };
 
-const background: IBackgroundSettings = {
+const backgroundSettings: IBackgroundSettings = {
   brightness: "80%",
   default: "#000000",
   generate: true,
   static: false,
 };
 
-const preview: IPreviewSettings = {
+const previewSettings: IPreviewSettings = {
   imageName: "preview.png",
-  imageRatio: format.height / format.width,
+  imageRatio: formatSettings.height / formatSettings.width,
   thumbPerRow: 5,
   thumbWidth: 50,
 };
@@ -115,7 +115,7 @@ const generateMetadata: IGenerateMetaDataSettings = {
   ],
 };
 
-const preview_gif: IGifPreviewSettings = {
+const previewGifSettings: IGifPreviewSettings = {
   numberOfImages: 5,
   order: "ASC",
   repeat: 0,
@@ -125,16 +125,16 @@ const preview_gif: IGifPreviewSettings = {
 };
 
 export {
-  background,
-  format,
+  backgroundSettings as background,
+  formatSettings as format,
   generalMetaData,
   generalSettings,
   generateMetadata,
   gif,
   layerConfigs,
   pixelFormat,
-  preview,
-  preview_gif,
+  previewSettings as preview,
+  previewGifSettings as preview_gif,
   solanaMetadata,
   text,
 };

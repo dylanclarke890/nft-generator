@@ -20,7 +20,7 @@
     "preview": "ts-node cli/cli-service.ts feature preview",
     "pixelate": "ts-node cli/cli-service.ts feature pixelate",
     "update-info": "ts-node cli/cli-service.ts feature update-info",
-    "upload-info": "ts-node src/features/upload-images.ts",
+    "upload-info": "ts-node cli/cli-service.ts feature upload-info",
     "preview-gif": "ts-node cli/cli-service.ts feature preview-gif",
     "generate-metadata": "ts-node cli/cli-service.ts fe generate-metadata"
   },

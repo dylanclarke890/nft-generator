@@ -69,6 +69,8 @@ export interface ILayersOptions {
 export interface IPinataSettings {
   apiKey: string;
   apiSecret: string;
+  name: string;
+  keyvalues: { [key: string]: string };
 }
 
 export interface IPixelFormatSettings {

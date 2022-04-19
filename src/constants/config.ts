@@ -48,9 +48,11 @@ const solanaMetadata: ISolanaData = {
   ],
 };
 
-const pinataSettings : IPinataSettings = {
-  apiKey: "YOUR-API-KEY-HERE",
-  apiSecret: "YOUR-API-SECRET-HERE",
+const pinataSettings: IPinataSettings = {
+  apiKey: "YOUR_API_KEY_HERE",
+  apiSecret: "YOUR_API_SECRET_HERE",
+  name: "PinataTest",
+  keyvalues: {},
 };
 
 // If network type = "sol" is selected count starts at 0.

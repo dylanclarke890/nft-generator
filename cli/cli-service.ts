@@ -6,6 +6,7 @@ import { preview } from "../src/features/preview";
 import { previewGif } from "../src/features/preview-gif";
 import { rarity } from "../src/features/rarity";
 import { updateInfo } from "../src/features/update-info";
+import { pinImagesToIPFS } from "../src/features/upload-images";
 
 const featureArgs = ["fe", "f", "feature", "features"];
 
@@ -55,14 +56,17 @@ function cliService() {
     case "update-info":
       updateInfo();
       break;
+    case "upi":
+    case "upload-info":
+      pinImagesToIPFS();
+      break;
     default:
       showAvailableFeatures();
       break;
   }
 }
 
-const invalidArgs = () =>
-  console.log("Invalid args. Valid:", featureArgs);
+const invalidArgs = () => console.log("Invalid args. Valid:", featureArgs);
 
 const showAvailableFeatures = () => {
   console.log("Try running 'npm run cli -- fe <feature-arg>'");

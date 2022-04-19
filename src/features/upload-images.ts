@@ -6,7 +6,7 @@ import recursive from "recursive-fs";
 import basePathConverter from "base-path-converter";
 import { pinata } from "../constants/config";
 
-export const pinDirectoryToIPFS = () => {
+export function pinImagesToIPFS() {
   const url = `https://api.pinata.cloud/pinning/pinFileToIPFS`;
   const src = "./build/images";
 
@@ -21,10 +21,8 @@ export const pinDirectoryToIPFS = () => {
     });
 
     const metadata = JSON.stringify({
-      name: "testname",
-      keyvalues: {
-        exampleKey: "exampleValue",
-      },
+      name: pinata.name,
+      keyvalues: pinata.keyvalues,
     });
     data.append("pinataMetadata", metadata);
 
@@ -36,10 +34,10 @@ export const pinDirectoryToIPFS = () => {
           pinata_secret_api_key: pinata.apiSecret,
         },
       });
+      console.log(response);
+      console.log("Successfully uploaded images.");
     } catch (error) {
-      console.log(error);
+      console.log("Error while processing request.");
     }
   });
-};
-
-pinDirectoryToIPFS();
+}

@@ -66,6 +66,11 @@ export interface ILayersOptions {
   opacity?: number;
 }
 
+export interface IPinataSettings {
+  apiKey: string;
+  apiSecret: string;
+}
+
 export interface IPixelFormatSettings {
   ratio: number;
 }

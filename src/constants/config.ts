@@ -7,6 +7,7 @@ import {
   IGifPreviewSettings,
   IGifSettings,
   ILayerConfig,
+  IPinataSettings,
   IPixelFormatSettings,
   IPreviewSettings,
   ITextSettings,
@@ -45,6 +46,11 @@ const solanaMetadata: ISolanaData = {
       share: 100,
     },
   ],
+};
+
+const pinataSettings : IPinataSettings = {
+  apiKey: "YOUR-API-KEY-HERE",
+  apiSecret: "YOUR-API-SECRET-HERE",
 };
 
 // If network type = "sol" is selected count starts at 0.
@@ -133,6 +139,7 @@ export {
   gif,
   layerConfigs,
   pixelFormat,
+  pinataSettings as pinata,
   previewSettings as preview,
   previewGifSettings as preview_gif,
   solanaMetadata,

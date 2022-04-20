@@ -1,6 +1,11 @@
 # NFT Generator
 
-## Update 1.1
+## Update 1.2.0
+
+Now able to upload the images and JSON in one command by running `npm run upload-nfts`.
+
+## Update 1.1.0
+
 You're now able to upload the generated images and JSON to Pinata from within the CLI! There are new `pinataSettings` which need updating with an API key and secret in order for the new feature to work, but other than that it's as simple as generating your images, uploading the images with the new `npm run upload-images` command and updating the `baseUri` property in `generalSettings` with the CID (content identifier) that's returned, then running `npm run update-info` followed by `npm run update-metadata` in order to update the metadata with the correct image path and upload that data to Pinata as well. I'm currently in the process of writing an additional feature to combine these steps into one command to make things even easier to use.
 
 ## Overview
@@ -236,4 +241,22 @@ npm run upload-metadata
 
 Additional settings can also be passed in via `pinataSettings`:
 
+- `metadataFolderName` - The folder name for the metadata once uploaded to Pinata. Defaults to `pinata-metadata`.
+
+## upload-nfts
+
+Uploads a collection of images and metadata to Pinata, updating the baseUri for the image path in the relevant JSON files. Requires a collection to have been previously generated (via [generate](#generate "Go to generate")) to work.
+
+### upload-nfts cli commands
+
+```npm
+npm run cli -- f upn
+npm run cli -- feature upn
+npm run cli -- feature upload-nfts
+npm run upload-nfts
+```
+
+Additional settings can also be passed in via `pinataSettings`:
+
+- `imageFolderName` - The folder name for the images once uploaded to Pinata. Defaults to `pinata-images`.
 - `metadataFolderName` - The folder name for the metadata once uploaded to Pinata. Defaults to `pinata-metadata`.

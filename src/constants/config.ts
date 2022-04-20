@@ -49,8 +49,8 @@ const solanaMetadata: ISolanaData = {
 };
 
 const pinataSettings: IPinataSettings = {
-  apiKey: "YOUR_API_KEY_HERE",
-  apiSecret: "YOUR_API_SECRET_HERE",
+  apiKey: "8681127a12339713af60",
+  apiSecret: "7ff5414b57ff116e177e03ae72ac9ccaa0280b6df902e2aadd72aff9e39ab883",
   imagesFolderName: "pinata-images",
   metadataFolderName: "pinata-metadata",
   keyvalues: {},

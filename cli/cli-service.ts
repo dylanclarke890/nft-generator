@@ -65,11 +65,11 @@ async function cliService() {
     case "upload-metadata":
       pinJSONToIPFS();
       break;
-    // case "un": not working yet due to async - you'll know what this means
-    // case "upload-nfts":
-    //   const imageCID = await pinImagesToIPFS();
-    //   await pinJSONToIPFS(imageCID, true);
-    //   break;
+    case "un": 
+    case "upload-nfts":
+      const imageCID = await pinImagesToIPFS();
+      await pinJSONToIPFS(imageCID, true);
+      break;
     default:
       showAvailableFeatures();
       break;

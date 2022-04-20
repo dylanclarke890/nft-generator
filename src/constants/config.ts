@@ -49,9 +49,12 @@ const solanaMetadata: ISolanaData = {
 };
 
 const pinataSettings: IPinataSettings = {
+  // 
   apiKey: "YOUR_API_KEY_HERE",
+  // 
   apiSecret: "YOUR_API_SECRET_HERE",
-  name: "PinataTest",
+  imagesFolderName: "PinataTest-images",
+  metadataFolderName: "PinataTest-json",
   keyvalues: {},
 };
 

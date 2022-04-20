@@ -4,11 +4,11 @@ import fs from "fs";
 import FormData from "form-data";
 import recursive from "recursive-fs";
 import basePathConverter from "base-path-converter";
-import { pinata } from "../constants/config";
+import { generalSettings, pinata } from "../constants/config";
 
 export function pinImagesToIPFS() {
   const url = `https://api.pinata.cloud/pinning/pinFileToIPFS`;
-  const src = "./build/images";
+  const src = `${generalSettings.buildDirectory}/images`;
 
   //we gather the files from a local directory in this example, but a valid readStream is all that's needed for each file in the directory.
   recursive.readdirr(src, async (err: any, dirs: any, files: any[]) => {
@@ -21,11 +21,11 @@ export function pinImagesToIPFS() {
     });
 
     const metadata = JSON.stringify({
-      name: pinata.name,
+      name: pinata.imagesFolderName,
       keyvalues: pinata.keyvalues,
     });
     data.append("pinataMetadata", metadata);
-
+    let dataHash = "";
     try {
       const response = await axios.post(url, data, {
         headers: {
@@ -34,10 +34,11 @@ export function pinImagesToIPFS() {
           pinata_secret_api_key: pinata.apiSecret,
         },
       });
-      console.log(response);
-      console.log("Successfully uploaded images.");
+      dataHash = response.data.IpfsHash;
+      console.log(`Successfully uploaded images with hash: ${dataHash}`);
     } catch (error) {
-      console.log("Error while processing request.");
+      console.log("Error while processing request.", error);
     }
+    return dataHash;
   });
 }

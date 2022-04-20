@@ -69,7 +69,8 @@ export interface ILayersOptions {
 export interface IPinataSettings {
   apiKey: string;
   apiSecret: string;
-  name: string;
+  imagesFolderName: string;
+  metadataFolderName: string;
   keyvalues: { [key: string]: string };
 }
 

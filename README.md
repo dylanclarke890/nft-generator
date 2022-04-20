@@ -1,5 +1,10 @@
 # NFT Generator
 
+## Update 1.1
+You're now able to upload the generated images and JSON to Pinata from within the CLI! There are new `pinataSettings` which need updating with an API key and secret in order for the new feature to work, but other than that it's as simple as generating your images, uploading the images with the new `npm run upload-images` command and updating the `baseUri` property in `generalSettings` with the CID (content identifier) that's returned, then running `npm run update-info` followed by `npm run update-metadata` in order to update the metadata with the correct image path and upload that data to Pinata as well. I'm currently in the process of writing an additional feature to combine these steps into one command to make things even easier to use.
+
+## Overview
+
 TypeScript implementation of [the HashLips Art Engine](https://github.com/HashLips/hashlips_art_engine "HashLips Art Engine"), refactored with additional support via the cli. This is a generative art engine with support for generating images, pixelated images and GIFs, with a variety of options that can be modified such as blend, opacity and rarity. The generated metadata can be configured to be compatible with Solana. Can also generate image/GIF previews of what can be generated using the current configuration settings.
 
 The art is generated using the images provided in `/layers/`. Depending on the layer settings specified in `/src/constants/config.ts`, image layers are stacked on top of each other, with custom blend and opacity settings applied to each one to create the final overall image. This can be further customised by specifying additional layer configurations (in which case the `growEditionSizeTo` property needs to be increasingly larger each time, see below for usage) in order to generate a huge variety of different looking images, with a unique id, edition number and associated metadata generated for each one.
@@ -190,3 +195,45 @@ npm run cli -- feature ui
 npm run cli -- feature update-info
 npm run update-info
 ```
+
+## Uploading Data
+
+Both the images and associated metadata can be uploaded to Pinata using the CLI however it's recommended to upload the images first, update the path of the images in the JSON file by updating the `baseUri` property in `generalMetadata` with the CID of the uploaded images folder, the upload the metadata to ensure they are pointing to the correct locations correctly. All of the following commands require `apiKey` and `apiSecret` to be specified in `pinataSettings` in order to work.
+
+## upload-images
+
+Uploads an image collection to Pinata. Requires a collection to have been previously generated (via [generate](#generate "Go to generate")) to work.
+
+### upload-images cli commands
+
+```npm
+npm run cli -- f upi
+npm run cli -- feature upi
+npm run cli -- feature upload-images
+npm run upload-images
+```
+
+### upload-images additional configs
+
+Additional settings can also be passed in via `pinataSettings`:
+
+- `imageFolderName` - The folder name for the images once uploaded to Pinata. Defaults to `pinata-images`.
+
+## upload-metadata
+
+Uploads a collection of metadata to Pinata. Requires a collection to have been previously generated (via [generate](#generate "Go to generate")) to work.
+
+### upload-metadata cli commands
+
+```npm
+npm run cli -- f upm
+npm run cli -- feature upm
+npm run cli -- feature upload-metadata
+npm run upload-metadata
+```
+
+### upload-metadata additional configs
+
+Additional settings can also be passed in via `pinataSettings`:
+
+- `metadataFolderName` - The folder name for the metadata once uploaded to Pinata. Defaults to `pinata-metadata`.

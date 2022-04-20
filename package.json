@@ -22,8 +22,9 @@
     "pixelate": "ts-node cli/cli-service.ts feature pixelate",
     "rarity": "ts-node cli/cli-service.ts feature rarity",
     "update-info": "ts-node cli/cli-service.ts feature update-info",
-    "upload-info": "ts-node cli/cli-service.ts feature upload-images",
-    "upload-metadata": "ts-node cli/cli-service.ts feature upload-metadata"
+    "upload-images": "ts-node cli/cli-service.ts feature upload-images",
+    "upload-metadata": "ts-node cli/cli-service.ts feature upload-metadata",
+    "upload-nfts": "ts-node cli/cli-service.ts feature upload-nfts"
   },
   "author": "Dylan Clarke",
   "license": "MIT",

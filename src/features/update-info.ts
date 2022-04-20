@@ -10,7 +10,7 @@ import { IMetaData } from "../interfaces/general";
 const { baseUri, namePrefix, description, network } = generalMetaData;
 const buildDir = generalSettings.buildDirectory;
 
-export function updateInfo() {
+export function updateInfo(uri: string | null = null) {
   const rawdata = fs.readFileSync(`${buildDir}/json/_metadata.json`, "utf-8");
   const data: IMetaData[] = JSON.parse(rawdata);
 
@@ -22,7 +22,7 @@ export function updateInfo() {
     } else {
       item.name = `${namePrefix} #${item.edition}`;
       item.description = description;
-      item.image = `${baseUri}/${item.edition}.png`;
+      item.image = `${uri || baseUri}/${item.edition}.png`;
     }
     fs.writeFileSync(
       `${buildDir}/json/${item.edition}.json`,
@@ -40,7 +40,7 @@ export function updateInfo() {
     console.log(`Updated name prefix for images to ===> ${namePrefix}`);
     console.log("Updated creators for images to ===>", solanaMetadata.creators);
   } else {
-    console.log(`Updated baseUri for images to ===> ${baseUri}`);
+    console.log(`Updated baseUri for images to ===> ${uri || baseUri}`);
     console.log(`Updated description for images to ===> ${description}`);
     console.log(`Updated name prefix for images to ===> ${namePrefix}`);
   }

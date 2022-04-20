@@ -7,10 +7,11 @@ import { previewGif } from "../src/features/preview-gif";
 import { rarity } from "../src/features/rarity";
 import { updateInfo } from "../src/features/update-info";
 import { pinImagesToIPFS } from "../src/features/upload-images";
+import { pinJSONToIPFS } from "../src/features/upload-metadata";
 
 const featureArgs = ["fe", "f", "feature", "features"];
 
-function cliService() {
+async function cliService() {
   const args = process.argv.slice(2);
   if (args.length === 0) {
     invalidArgs();
@@ -57,9 +58,18 @@ function cliService() {
       updateInfo();
       break;
     case "upi":
-    case "upload-info":
+    case "upload-images":
       pinImagesToIPFS();
       break;
+    case "upm":
+    case "upload-metadata":
+      pinJSONToIPFS();
+      break;
+    // case "un": not working yet due to async - you'll know what this means
+    // case "upload-nfts":
+    //   const imageCID = await pinImagesToIPFS();
+    //   await pinJSONToIPFS(imageCID, true);
+    //   break;
     default:
       showAvailableFeatures();
       break;
